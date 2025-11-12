@@ -11,24 +11,16 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
 body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
-
-/* Header */
 .header{background:linear-gradient(135deg,#0083FF 0%,#00C2FF 100%);color:white;padding:20px;padding-top:40px;border-radius:0 0 25px 25px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .header h1{font-size:1.2rem;font-weight:600;}
 .profile-icon{width:35px;height:35px;border-radius:50%;background-color:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;}
-
-/* Saldo Card */
 .balance-card{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:15px;padding:20px;text-align:center;}
 .balance-label{font-size:0.9rem;opacity:0.9;}
 .balance-amount{font-size:2.5rem;font-weight:700;margin:10px 0;}
 .balance-amount span{font-size:1.5rem;font-weight:400;}
 .user-info{font-size:0.9rem;opacity:0.9;}
-
-/* Main */
 .main-content{flex-grow:1;padding:20px;display:flex;flex-direction:column;gap:20px;}
-
-/* Quick Actions */
 .quick-actions{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
 .quick-actions h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
 .action-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
@@ -36,8 +28,6 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .action-item:hover{transform:translateY(-3px);}
 .action-item .icon{width:50px;height:50px;background-color:#e6f0ff;color:#0083FF;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:8px;}
 .action-item .label{font-size:0.8rem;color:#666;}
-
-/* Other Features */
 .other-features{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
 .other-features h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
 .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
@@ -46,8 +36,6 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .feature-item .icon{width:40px;height:40px;background-color:#e6f0ff;color:#0083FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-right:12px;}
 .feature-item .text h3{font-size:0.9rem;font-weight:600;color:#333;margin-bottom:3px;}
 .feature-item .text p{font-size:0.75rem;color:#666;}
-
-/* Transaction History */
 .transaction-history{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
 .transaction-history h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
 .view-all{font-size:0.8rem;color:#0083FF;cursor:pointer;}
@@ -62,15 +50,11 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .history-amount{font-weight:600;}
 .history-amount.in{color:#4caf50;}
 .history-amount.out{color:#f44336;}
-
-/* Bottom Nav */
 .bottom-nav{background:white;display:flex;justify-content:space-around;padding:10px 0;box-shadow:0 -2px 10px rgba(0,0,0,0.05);}
 .nav-item{display:flex;flex-direction:column;align-items:center;color:#999;cursor:pointer;transition:color 0.2s;}
 .nav-item.active{color:#0083FF;}
 .nav-item .icon{font-size:1.5rem;}
 .nav-item .label{font-size:0.75rem;margin-top:4px;}
-
-/* Popup */
 .popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;}
 .popup-content{background:white;border-radius:15px;padding:25px;width:90%;max-width:350px;text-align:center;animation:popIn 0.3s ease;}
 @keyframes popIn{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
@@ -84,7 +68,7 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 </head>
 <body>
 
-<!-- Header -->
+<!-- HEADER -->
 <div class="header">
   <div class="header-top">
     <h1>Goopy</h1>
@@ -97,7 +81,7 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
   </div>
 </div>
 
-<!-- Main -->
+<!-- MAIN -->
 <div class="main-content">
   <div class="quick-actions">
     <h2>Menu Cepat</h2>
@@ -109,48 +93,9 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
     </div>
   </div>
 
-  <div class="other-features">
-    <h2>Layanan Lainnya</h2>
-    <div class="feature-grid">
-      <div class="feature-item" onclick="navigateTo('pay.html')"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div><div class="text"><h3>Tagihan</h3><p>Bayar tagihan bulanan</p></div></div>
-      <div class="feature-item" onclick="navigateTo('pulsa.html')"><div class="icon"><i class="fas fa-mobile-alt"></i></div><div class="text"><h3>Pulsa & Data</h3><p>Isi ulang pulsa & paket data</p></div></div>
-      <div class="feature-item" onclick="navigateTo('games.html')"><div class="icon"><i class="fas fa-gamepad"></i></div><div class="text"><h3>Top Up Games</h3><p>Isi diamond game favorit</p></div></div>
-      <div class="feature-item" onclick="navigateTo('donation.html')"><div class="icon"><i class="fas fa-hand-holding-heart"></i></div><div class="text"><h3>Donasi</h3><p>Bantu sesama dengan donasi</p></div></div>
-    </div>
-  </div>
-
   <div class="transaction-history">
     <h2>Transaksi Terakhir <span class="view-all" onclick="navigateTo('history.html')">Lihat Semua</span></h2>
     <div class="history-list" id="historyList"></div>
-  </div>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div class="nav-item active"><span class="icon"><i class="fas fa-home"></i></span><span class="label">Beranda</span></div>
-  <div class="nav-item" onclick="navigateTo('pay.html')"><span class="icon"><i class="fas fa-wallet"></i></span><span class="label">Bayar</span></div>
-  <div class="nav-item" onclick="navigateTo('inbox.html')"><span class="icon"><i class="fas fa-envelope"></i></span><span class="label">Inbox</span></div>
-  <div class="nav-item" onclick="navigateTo('profile.html')"><span class="icon"><i class="fas fa-user-circle"></i></span><span class="label">Akun</span></div>
-</div>
-
-<!-- Popups -->
-<div class="popup-overlay" id="logoutPopup">
-  <div class="popup-content">
-    <h3>Keluar dari Akun?</h3>
-    <p>Anda akan keluar dari sesi Goopy saat ini.</p>
-    <button class="btn-cancel" id="cancelLogout">Batal</button>
-    <button class="btn-logout" id="confirmLogout">Keluar</button>
-  </div>
-</div>
-
-<div class="popup-overlay" id="pinReminderPopup">
-  <div class="popup-content">
-    <h3>PIN Anda Belum Dibuat</h3>
-    <p>Anda belum membuat PIN untuk transaksi. Yuk buat PIN sekarang!</p>
-    <div>
-      <button class="btn-cancel" id="laterPinBtn">Nanti</button>
-      <button class="btn-primary" id="createPinBtn">Buat PIN</button>
-    </div>
   </div>
 </div>
 
@@ -180,31 +125,43 @@ const pinPopup=document.getElementById('pinReminderPopup');
 
 auth.onAuthStateChanged(async user=>{
   if(!user){window.location.href="index.html";return;}
-  const userDoc=await db.collection('users').doc(user.uid).get();
-  const userData=userDoc.exists?userDoc.data():{};
-  const balance=userData.balance||0;
-  balanceEl.textContent=balance.toLocaleString('id-ID');
-  userInfo.textContent=`Halo, ${userData.name||'Pengguna'}`;
-  if(!userData.pin){pinPopup.style.display='flex';}
-  loadTransactions(user.uid);
+
+  try {
+    // Ambil data user
+    const docSnap = await db.collection('users').doc(user.uid).get();
+    if (!docSnap.exists) {
+      console.warn("User data tidak ditemukan!");
+      return;
+    }
+
+    const userData = docSnap.data();
+    balanceEl.textContent = (userData.balance || 0).toLocaleString('id-ID');
+    userInfo.textContent = `Halo, ${userData.name || 'Pengguna'}`;
+    if (!userData.pin) pinPopup.style.display = 'flex';
+
+    // Load transaksi user
+    loadTransactions(user.uid);
+
+  } catch (e) {
+    console.error("Gagal ambil data user:", e);
+  }
 });
 
 async function loadTransactions(uid){
-  const transRef=db.collection('transactions')
-    .where('senderId','==',uid)
-    .orderBy('timestamp','desc')
-    .limit(5);
-  const transRef2=db.collection('transactions')
-    .where('recipientId','==',uid)
-    .orderBy('timestamp','desc')
-    .limit(5);
+  try {
+    const sentSnap = await db.collection('transactions').where('senderId','==',uid).get();
+    const recvSnap = await db.collection('transactions').where('recipientId','==',uid).get();
 
-  const [sent,received]=await Promise.all([transRef.get(),transRef2.get()]);
-  const all=[...sent.docs,...received.docs]
-    .map(d=>({id:d.id,...d.data()}))
-    .sort((a,b)=>b.timestamp?.seconds-a.timestamp?.seconds)
-    .slice(0,5);
-  renderTransactions(all);
+    const all = [...sentSnap.docs, ...recvSnap.docs]
+      .map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=> (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0))
+      .slice(0,5);
+
+    renderTransactions(all);
+  } catch (err) {
+    console.error("Gagal ambil transaksi:", err);
+    historyList.innerHTML = `<p style="color:red;font-size:0.9rem;">Gagal memuat transaksi.</p>`;
+  }
 }
 
 function renderTransactions(list){
@@ -215,26 +172,22 @@ function renderTransactions(list){
   }
   list.forEach(t=>{
     const isOut=t.senderId===auth.currentUser.uid;
-    const prefix=isOut?'-':'+';
-    const amountClass=isOut?'out':'in';
+    const prefix=isOut?'-':'+'; const amountClass=isOut?'out':'in';
     const iconClass=isOut?'fa-arrow-up':'fa-arrow-down';
     const name=isOut?(t.recipientName||t.recipientId):(t.senderName||t.senderId);
-    const time=new Date(t.timestamp.seconds*1000).toLocaleString('id-ID');
+    const time=new Date(t.timestamp?.seconds*1000 || Date.now()).toLocaleString('id-ID');
     historyList.innerHTML+=`
-    <div class="history-item">
-      <div class="history-details" style="display:flex;align-items:center;">
-        <div class="history-icon ${amountClass}"><i class="fas ${iconClass}"></i></div>
-        <div class="history-info"><p>${isOut?'Kirim ke':'Terima dari'} ${name}</p><span>${time}</span></div>
-      </div>
-      <div class="history-amount ${amountClass}">${prefix} Rp ${t.amount.toLocaleString('id-ID')}</div>
-    </div>`;
+      <div class="history-item">
+        <div class="history-details" style="display:flex;align-items:center;">
+          <div class="history-icon ${amountClass}"><i class="fas ${iconClass}"></i></div>
+          <div class="history-info"><p>${isOut?'Kirim ke':'Terima dari'} ${name}</p><span>${time}</span></div>
+        </div>
+        <div class="history-amount ${amountClass}">${prefix} Rp ${t.amount.toLocaleString('id-ID')}</div>
+      </div>`;
   });
 }
 
 function navigateTo(p){window.location.href=p;}
-document.getElementById('laterPinBtn').onclick=()=>pinPopup.style.display='none';
-document.getElementById('createPinBtn').onclick=()=>window.location.href='create-pin.html';
 </script>
-
 </body>
 </html>
