@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goopy — Buat PIN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{background:#f0f4f8;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{background:white;padding:30px 25px;border-radius:15px;box-shadow:0 4px 20px rgba(0,0,0,0.1);width:90%;max-width:400px;text-align:center;}
+h1{font-size:1.3rem;margin-bottom:15px;color:#0083FF;}
+p{font-size:0.85rem;color:#555;margin-bottom:20px;}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin-bottom:15px;font-size:1rem;}
+input:focus{outline:none;border-color:#0083FF;}
+button{width:100%;padding:12px;background:#0083FF;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
+button:hover{background:#006fcf;}
+.message{margin-top:10px;font-size:0.85rem;}
+.message.success{color:green;}
+.message.error{color:red;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Buat PIN Anda</h1>
+  <p>Masukkan PIN 6 digit untuk transaksi Anda.</p>
+  <input type="password" id="pinInput" placeholder="PIN 6 digit" maxlength="6" />
+  <input type="password" id="confirmPinInput" placeholder="Konfirmasi PIN" maxlength="6" />
+  <button id="savePinBtn">Simpan PIN</button>
+  <div class="message" id="message"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+firebase.initializeApp(firebaseConfig);
+const GoopyAuth = firebase.auth();
+const GoopyDB = firebase.firestore();
+
+const pinInput = document.getElementById('pinInput');
+const confirmPinInput = document.getElementById('confirmPinInput');
+const saveBtn = document.getElementById('savePinBtn');
+const messageEl = document.getElementById('message');
+
+GoopyAuth.onAuthStateChanged(user=>{
+  if(!user) window.location.href = "index.html";
+});
+
+saveBtn.addEventListener('click', async ()=>{
+  const pin = pinInput.value.trim();
+  const confirmPin = confirmPinInput.value.trim();
+  messageEl.textContent = ''; messageEl.className='message';
+
+  if(pin.length !== 6 || confirmPin.length !== 6){
+    messageEl.textContent = "PIN harus 6 digit."; messageEl.classList.add('error'); return;
+  }
+  if(pin !== confirmPin){
+    messageEl.textContent = "PIN dan konfirmasi tidak cocok."; messageEl.classList.add('error'); return;
+  }
+
+  const user = GoopyAuth.currentUser;
+  if(!user){ messageEl.textContent="User tidak ditemukan."; messageEl.classList.add('error'); return; }
+
+  try{
+    await GoopyDB.collection('users').doc(user.uid).update({pin:pin});
+    messageEl.textContent = "PIN berhasil dibuat!"; messageEl.classList.add('success');
+    setTimeout(()=>{window.location.href="dashboard.html";},1500);
+  }catch(err){
+    console.error(err);
+    messageEl.textContent = "Gagal menyimpan PIN. Coba lagi."; messageEl.classList.add('error');
+  }
+});
+</script>
+</body>
+</html>

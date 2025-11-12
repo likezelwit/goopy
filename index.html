@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goopy — Selamat Datang</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{
+  height:100vh;
+  background:linear-gradient(160deg,#007bff,#00d4ff);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;color:#fff;
+}
+
+/* ====== ANIMASI MASUK ====== */
+.container{
+  text-align:center;
+  animation:fadeIn 0.6s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+/* Garis bawah */
+.line{
+  width:0%;
+  height:3px;
+  background:#fff;
+  margin:0 auto;
+  animation:lineGrow 1.5s forwards;
+}
+@keyframes lineGrow{to{width:80%;}}
+
+.dog{
+  font-size:3rem;
+  opacity:0;
+  animation:dogPop 0.8s ease forwards;
+}
+@keyframes dogPop{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* Teks utama */
+h1{
+  font-size:2.2rem;
+  opacity:0;
+  transform:translateY(20px);
+  animation:showText 0.8s ease forwards;
+  animation-delay:1.5s;
+}
+@keyframes showText{to{opacity:1;transform:translateY(0);}}
+
+/* ====== CARD ====== */
+.agreement{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity 0.8s ease, transform 0.8s ease;
+  display:none;
+}
+
+/* Card style */
+.card{
+  background:#fff;
+  color:#333;
+  border-radius:18px;
+  padding:24px;
+  width:90%;
+  max-width:350px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  margin:auto;
+}
+.card h2{margin-bottom:12px;color:#007bff;}
+.card label{display:block;margin:8px 0;cursor:pointer;font-size:0.95rem;line-height:1.5;}
+.card input[type="checkbox"]{margin-right:6px;}
+
+/* Tautan */
+a.link{
+  color:#7b4eff;
+  text-decoration:none;
+  font-weight:500;
+}
+a.link:hover{text-decoration:underline;}
+
+/* Tombol */
+button{
+  margin-top:14px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#007bff;
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+  opacity:0.5;
+  transition:0.25s;
+}
+button.enabled{opacity:1;}
+
+/* Slide keluar */
+.slideOut{
+  animation:slideLeft 0.8s ease forwards;
+}
+@keyframes slideLeft{
+  to{transform:translateX(-100%);opacity:0;}
+}
+
+/* Responsif */
+@media(max-width:600px){
+  h1{font-size:1.8rem;}
+  .card{max-width:95%;}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="intro">
+  <div class="dog">🐶</div>
+  <div class="line"></div>
+  <h1 id="welcomeText">Selamat datang di Goopy!</h1>
+</div>
+
+<div class="agreement" id="agreement">
+  <div class="card">
+    <h2>Sebelum lanjut...</h2>
+    <p>Kamu harus menyetujui ketentuan Goopy:</p>
+    <label><input type="checkbox" id="cb1"> Saya setuju dengan 
+      <a href="#" class="link">Syarat layanan</a></label>
+    <label><input type="checkbox" id="cb2"> Saya menyetujui 
+      <a href="#" class="link">Kebijakan privasi</a></label>
+    <button id="nextBtn" disabled>Lanjut</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.GoopyAuth = firebase.auth();
+    console.log('Firebase initialized');
+  } catch(e){console.error('Firebase init error', e);}
+</script>
+
+<script>
+const agreement = document.getElementById("agreement");
+
+// Cek apakah user sudah login
+GoopyAuth.onAuthStateChanged(user => {
+  if (user) {
+    // User sudah login, redirect ke home.html
+    window.location.href = "./home.html";
+  } else {
+    // User belum login, tampilkan animasi
+    showAgreement();
+  }
+});
+
+function showAgreement() {
+  // langsung tampil setelah teks selesai muncul (2.2 detik total animasi)
+  setTimeout(()=>{
+    agreement.style.display = "block";
+    setTimeout(()=>{
+      agreement.style.opacity = "1";
+      agreement.style.transform = "translateY(0)";
+    },100); // transisi smooth
+  },2200);
+}
+
+const cb1=document.getElementById("cb1");
+const cb2=document.getElementById("cb2");
+const btn=document.getElementById("nextBtn");
+
+function checkAgree(){
+  if(cb1.checked && cb2.checked){
+    btn.disabled=false;
+    btn.classList.add("enabled");
+  }else{
+    btn.disabled=true;
+    btn.classList.remove("enabled");
+  }
+}
+cb1.onchange=cb2.onchange=checkAgree;
+
+btn.addEventListener("click",()=>{
+  document.body.classList.add("slideOut");
+  setTimeout(()=>window.location.href="./login.html",800);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goopy — Daftar</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+  body{
+    height:100vh;
+    background:linear-gradient(160deg,#007bff,#00d4ff);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;color:#fff;
+  }
+  .container{opacity:0;transform:translateX(100%);animation:slideIn 0.8s ease forwards;}
+  @keyframes slideIn{to{opacity:1;transform:translateX(0);} }
+
+  .card{
+    background:#fff;color:#333;border-radius:20px;
+    padding:32px 24px;width:90%;max-width:360px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.25);text-align:center;
+  }
+  .card h2{margin-bottom:20px;color:#007bff;font-weight:600;font-size:1.6rem;}
+
+  .input{width:100%;padding:12px;margin:8px 0;border:none;
+    border-radius:10px;background:#f0f4ff;font-size:1rem;transition:0.25s;}
+  .input:focus{outline:none;background:#e4edff;}
+
+  .btn{margin-top:12px;width:100%;padding:12px;border:none;
+    border-radius:10px;background:#007bff;color:white;
+    font-size:1.05rem;cursor:pointer;transition:0.3s;}
+  .btn:hover{background:#0069e4;}
+
+  .small{margin-top:10px;font-size:0.9rem;}
+  .small a{color:#7b4eff;text-decoration:none;font-weight:500;}
+  .small a:hover{text-decoration:underline;}
+  #msg{color:#ff4444;margin-top:8px;min-height:20px;}
+
+  .popup{position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(0.8);
+    background:white;color:#333;border-radius:16px;
+    padding:24px 30px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,0.3);
+    opacity:0;transition:0.4s ease;z-index:1000;display:none;}
+  .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);display:block;}
+  .popup.success h3{color:#00a550;}
+  .popup.error h3{color:#ff4444;}
+  .popup button{margin-top:12px;padding:8px 16px;background:#007bff;
+    border:none;color:white;border-radius:8px;cursor:pointer;}
+  .popup button:hover{background:#0069e4;}
+
+  .input-group{position:relative;margin:8px 0;}
+  .input-group .input{padding-left:40px;}
+  .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    color:#007bff;font-size:1rem;}
+  @media(max-width:600px){.card{max-width:95%;padding:28px 20px;}.card h2{font-size:1.4rem;}}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+firebase.initializeApp(firebaseConfig);
+const GoopyAuth = firebase.auth();
+const GoopyDB = firebase.firestore();
+</script>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h2>Buat akun Goopy</h2>
+    <div class="form">
+      <div class="input-group"><i class="fas fa-user input-icon"></i>
+        <input id="su_name" class="input" placeholder="Nama lengkap" type="text" autocomplete="off" required>
+      </div>
+      <div class="input-group"><i class="fas fa-user-tag input-icon"></i>
+        <input id="su_username" class="input" placeholder="Username unik" type="text" autocomplete="off" required>
+      </div>
+      <div class="input-group"><i class="fas fa-envelope input-icon"></i>
+        <input id="su_email" class="input" placeholder="Email" type="email" autocomplete="off" required>
+      </div>
+      <div class="input-group"><i class="fas fa-phone input-icon"></i>
+        <input id="su_phone" class="input" placeholder="Nomor Telepon" type="tel" autocomplete="off" required>
+      </div>
+      <div class="input-group"><i class="fas fa-lock input-icon"></i>
+        <input id="su_password" class="input" placeholder="Password (min 6)" type="password" autocomplete="new-password" required>
+      </div>
+      <button id="btnSignup" class="btn">Daftar</button>
+      <div class="small">Sudah punya akun? <a href="./login.html">Masuk</a></div>
+      <div id="msg" class="small"></div>
+    </div>
+  </div>
+</div>
+
+<div id="popup" class="popup">
+  <h3></h3><p></p>
+  <button id="popupBtn">Oke</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+GoopyAuth.onAuthStateChanged(user => { if(user) window.location.href="./home.html"; });
+
+function showPopup(title,message,type="info"){
+  const popup=document.getElementById("popup");
+  popup.querySelector("h3").textContent=title;
+  popup.querySelector("p").textContent=message;
+  popup.className="popup "+type+" show";
+  popup.style.display="block";
+}
+document.getElementById("popupBtn").addEventListener("click",()=>{document.getElementById("popup").classList.remove("show");});
+
+function validatePhoneNumber(phone){
+  if(!phone) return false;
+  const cleaned = phone.replace(/[^\d+]/g,'');
+  const digitsOnly = cleaned.replace(/\D/g,'');
+  return digitsOnly.length >=6 && digitsOnly.length <=15;
+}
+
+function formatPhoneNumber(phone){
+  if(!phone) return "";
+  let cleaned = phone.replace(/[^\d+]/g,'');
+  if(cleaned.startsWith('0')) cleaned = '+62'+cleaned.substring(1);
+  return cleaned;
+}
+
+// SIGNUP FUNCTION (versi fix)
+async function signup(email,password,name,phone,username){
+  console.log("🔹 Mulai signup...");
+
+  const userCredential = await GoopyAuth.createUserWithEmailAndPassword(email,password);
+  const uid = userCredential.user.uid;
+
+  await userCredential.user.updateProfile({displayName:name});
+  const formattedPhone = formatPhoneNumber(phone);
+
+  const userData = {
+    uid: uid,
+    name: name,
+    username: username,
+    email: email,
+    phone: formattedPhone,
+    pin: "",
+    balance: 0,
+    transactions: [],
+    recentContacts: [],
+    createdAt: new Date() // ✅ Fix: gunakan timestamp JS agar rules lolos
+  };
+
+  console.log("🟢 Simpan data user ke Firestore:", userData);
+
+  await GoopyDB.collection("users").doc(uid).set(userData);
+  console.log("✅ Data Firestore berhasil dibuat");
+  return userCredential.user;
+}
+
+// HANDLE SIGNUP BUTTON
+document.getElementById('btnSignup').addEventListener('click', async ()=>{
+  const n = document.getElementById('su_name').value.trim();
+  const u = document.getElementById('su_username').value.trim();
+  const e = document.getElementById('su_email').value.trim();
+  const p = document.getElementById('su_phone').value.trim();
+  const pw = document.getElementById('su_password').value.trim();
+
+  if(!n||!u||!e||!p||!pw||pw.length<6){
+    showPopup("⚠️ Peringatan","Lengkapi semua field. Password minimal 6 karakter.","error");
+    return;
+  }
+
+  if(!validatePhoneNumber(p)){
+    showPopup("⚠️ Nomor tidak valid","Masukkan nomor telepon valid dengan kode negara.","error");
+    return;
+  }
+
+  try{
+    await signup(e,pw,n,p,u);
+    showPopup("✅ Berhasil","Akun berhasil dibuat! Selamat datang di Goopy.","success");
+    setTimeout(()=>location.href='./home.html',1500);
+  }catch(err){
+    console.error("Signup Error:",err);
+    if(err.code==='auth/email-already-in-use')
+      showPopup("❌ Email sudah digunakan","Gunakan email lain.","error");
+    else if(err.code==='auth/weak-password')
+      showPopup("❌ Password terlalu lemah","Gunakan password minimal 6 karakter.","error");
+    else if(err.code==='permission-denied')
+      showPopup("❌ Gagal menyimpan data","Periksa aturan Firestore (rules).","error");
+    else
+      showPopup("❌ Pendaftaran gagal",err.message || "Terjadi kesalahan.","error");
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goopy — Top Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+.header{background:linear-gradient(135deg,#0083FF 0%,#00C2FF 100%);color:white;padding:20px;padding-top:40px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.header-top{display:flex;align-items:center;margin-bottom:20px;}
+.back-btn{width:35px;height:35px;border-radius:50%;background-color:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;margin-right:15px;}
+.header h1{font-size:1.2rem;font-weight:600;}
+.balance-card{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:15px;padding:20px;text-align:center;}
+.balance-label{font-size:0.9rem;opacity:0.9;}
+.balance-amount{font-size:2.5rem;font-weight:700;margin:10px 0;}
+.main-content{flex-grow:1;padding:20px;display:flex;flex-direction:column;gap:20px;}
+.topup-amount, .payment-method{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.topup-amount h2, .payment-method h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
+.custom-amount{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:1rem;text-align:center;}
+.custom-amount:focus{outline:none;border-color:#0083FF;}
+.method-options{display:flex;flex-direction:column;gap:10px;}
+.method-option{display:flex;align-items:flex-start;padding:15px;border:1px solid #ddd;border-radius:10px;cursor:pointer;transition:all 0.2s;position:relative;}
+.method-option:hover{border-color:#0083FF;background-color:#f0f8ff;}
+.method-option.selected{border-color:#0083FF;background-color:#e6f0ff;}
+.method-option .icon{width:40px;height:40px;background-color:#f0f4f8;color:#0083FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-right:15px;margin-top:4px;}
+.method-option .text{flex-grow:1;}
+.method-option .text h3{font-size:0.9rem;font-weight:600;color:#333;margin-bottom:3px;}
+.method-option .text p{font-size:0.75rem;color:#666;margin-bottom:5px;}
+.method-option .radio{width:20px;height:20px;border:2px solid #ddd;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:4px;}
+.method-option.selected .radio{border-color:#0083FF;}
+.method-option.selected .radio::after{content:'';width:10px;height:10px;background-color:#0083FF;border-radius:50%;}
+.btn-container{margin-top:20px;}
+.btn-primary{width:100%;padding:15px;border:none;border-radius:10px;background:linear-gradient(135deg,#0083FF 0%,#00C2FF 100%);color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,131,255,0.3);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-content{background:white;border-radius:15px;padding:30px;width:90%;max-width:350px;text-align:center;animation:popIn 0.3s ease;}
+@keyframes popIn{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-content .icon{width:60px;height:60px;background-color:#e8f5e9;color:#4caf50;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 20px;}
+.modal-content h3{margin-bottom:10px;color:#333;}
+.modal-content p{margin-bottom:20px;color:#666;}
+.modal-content button{padding:10px 20px;border:none;border-radius:8px;background:#0083FF;color:white;cursor:pointer;font-weight:500;}
+.fullscreen-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.fullscreen-overlay h2{margin-bottom:20px;font-size:1.2rem;}
+#pinDots{display:flex;gap:10px;margin-bottom:20px;}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid #ccc;}
+.dot.filled{background:#0083FF;border-color:#0083FF;}
+#keypad{display:grid;grid-template-columns:repeat(3,80px);gap:15px;justify-content:center;}
+.key{width:80px;height:80px;font-size:1.5rem;border-radius:15px;border:none;background:#f0f4f8;cursor:pointer;transition:all 0.2s;}
+.key:hover{background:#e0f0ff;}
+.key.ok{background:#0083FF;color:white;}
+.key.ok:hover{background:#0074e8;}
+.key.clear{background:#ffebee;color:#e53935;}
+.key.clear:hover{background:#ffcdd2;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div>
+    <h1>Top Up</h1>
+  </div>
+  <div class="balance-card">
+    <p class="balance-label">Saldo Anda</p>
+    <p class="balance-amount" id="balanceAmount">Rp <span>0</span></p>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="topup-amount">
+    <h2>Masukkan Jumlah</h2>
+    <input type="number" class="custom-amount" id="customAmount" placeholder="Masukkan jumlah top up">
+  </div>
+  <div class="payment-method">
+    <h2>Metode Pembayaran</h2>
+    <div class="method-options">
+      <div class="method-option" data-method="transfer"><div class="icon"><i class="fas fa-university"></i></div><div class="text"><h3>Transfer Bank</h3><p>Transfer dari ATM, Mobile Banking, atau Internet Banking</p></div><div class="radio"></div></div>
+      <div class="method-option" data-method="va"><div class="icon"><i class="fas fa-credit-card"></i></div><div class="text"><h3>Virtual Account</h3><p>Bayar melalui VA BCA, BNI, BRI, dll</p></div><div class="radio"></div></div>
+      <div class="method-option" data-method="ewallet"><div class="icon"><i class="fas fa-wallet"></i></div><div class="text"><h3>E-Wallet</h3><p>Bayar menggunakan OVO, DANA, LinkAja, dll</p></div><div class="radio"></div></div>
+      <div class="method-option" data-method="minimarket"><div class="icon"><i class="fas fa-store"></i></div><div class="text"><h3>Minimarket</h3><p>Bayar di Alfamart, Indomaret, Alfamidi</p></div><div class="radio"></div></div>
+    </div>
+  </div>
+  <div class="btn-container">
+    <button class="btn-primary" id="topupBtn" disabled>Top Up Sekarang</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="successModal">
+  <div class="modal-content">
+    <div class="icon"><i class="fas fa-check"></i></div>
+    <h3>Top Up Berhasil!</h3>
+    <p id="successMessage">Rp 0 telah ditambahkan ke saldo Anda</p>
+    <button onclick="goHome()">Kembali ke Beranda</button>
+  </div>
+</div>
+
+<!-- Fullscreen PIN 6 digit -->
+<div class="fullscreen-overlay" id="pinOverlay">
+  <h2>Masukkan PIN Anda</h2>
+  <div id="pinDots">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div id="keypad">
+    <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+    <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+    <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+    <button class="key clear">C</button><button class="key">0</button><button class="key ok">OK</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+firebase.initializeApp(firebaseConfig);
+const GoopyAuth=firebase.auth();
+const GoopyDB=firebase.firestore();
+
+let currentUser=null, userBalance=0, selectedAmount=0, selectedMethod='', userPin='', hasPin=false, enteredPin='';
+
+const balanceAmountEl=document.getElementById('balanceAmount').querySelector('span');
+const customAmountInput=document.getElementById('customAmount');
+const methodOptions=document.querySelectorAll('.method-option');
+const topupBtn=document.getElementById('topupBtn');
+const successModal=document.getElementById('successModal');
+const successMessage=document.getElementById('successMessage');
+const pinOverlay=document.getElementById('pinOverlay');
+const dots=document.querySelectorAll('.dot');
+const keys=document.querySelectorAll('.key');
+
+GoopyAuth.onAuthStateChanged(user=>{
+  if(!user){window.location.href="./index.html";}
+  else{currentUser=user;loadUserData();}
+});
+
+function loadUserData(){
+  GoopyDB.collection("users").doc(currentUser.uid).get().then(doc=>{
+    if(doc.exists){
+      const data=doc.data();
+      userBalance=data.balance||0;
+      userPin=data.pin||null;
+      hasPin=!!userPin;
+    }
+    updateBalance();
+  });
+}
+
+function updateBalance(){ balanceAmountEl.textContent=userBalance.toLocaleString('id-ID'); }
+customAmountInput.addEventListener('input',()=>{selectedAmount=parseInt(customAmountInput.value)||0;checkReady();});
+methodOptions.forEach(opt=>opt.addEventListener('click',()=>{methodOptions.forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');selectedMethod=opt.dataset.method;checkReady();}));
+function checkReady(){topupBtn.disabled=!(selectedAmount>0&&selectedMethod!=='');}
+
+topupBtn.addEventListener('click',()=>{
+  if(!hasPin){
+    performTopUp(); // langsung sukses jika belum punya PIN
+  } else {
+    enteredPin='';updateDots();pinOverlay.style.display='flex';
+  }
+});
+
+keys.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const val=btn.textContent;
+    if(val==='C'){enteredPin='';updateDots();}
+    else if(val==='OK'){
+      if(enteredPin.length!==6){alert('PIN harus 6 digit!');return;}
+      if(enteredPin===userPin){pinOverlay.style.display='none';performTopUp();}
+      else{alert('PIN salah!');enteredPin='';updateDots();}
+    } else if(enteredPin.length<6){
+      enteredPin+=val;updateDots();
+    }
+  });
+});
+
+function updateDots(){
+  dots.forEach((d,i)=>{d.classList.toggle('filled',i<enteredPin.length);});
+}
+
+function performTopUp(){
+  userBalance+=selectedAmount;
+  const userId=currentUser.uid;
+  GoopyDB.collection('users').doc(userId).update({
+    balance:userBalance,
+    transactions:firebase.firestore.FieldValue.arrayUnion({
+      name:"Top Up Berhasil",
+      detail:`Metode: ${selectedMethod}`,
+      amount:selectedAmount,
+      type:'in',
+      date:new Date().toISOString()
+    })
+  });
+  successMessage.textContent=`Rp ${selectedAmount.toLocaleString('id-ID')} telah ditambahkan ke saldo Anda`;
+  successModal.style.display='flex';
+}
+
+function goBack(){history.back();}
+function goHome(){window.location.href='./home.html';}
+</script>
+</body>
+</html>

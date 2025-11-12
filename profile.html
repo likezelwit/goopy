@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goopy — Profil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{
+  background-color: #f0f4f8;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0083FF 0%, #00C2FF 100%);
+  color: white;
+  padding: 20px;
+  padding-top: 40px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.back-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 15px;
+}
+.header h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Profile Card */
+.profile-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #e6f0ff;
+  color: #0083FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  position: relative;
+}
+.edit-avatar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #0083FF;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 2px solid white;
+}
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.profile-email {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+.profile-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+.status-verified {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+.status-guest {
+  background-color: #f0f4f8;
+  color: #666;
+}
+
+/* Account Info */
+.account-info {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.account-info h2 {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.info-item:last-child {
+  border-bottom: none;
+}
+.info-label {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+.info-label .icon {
+  width: 30px;
+  height: 30px;
+  background-color: #f0f4f8;
+  color: #0083FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-right: 10px;
+}
+.info-value {
+  font-weight: 500;
+}
+
+/* Settings */
+.settings {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.settings h2 {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.setting-item:hover {
+  background-color: #f9f9f9;
+}
+.setting-item:last-child {
+  border-bottom: none;
+}
+.setting-left {
+  display: flex;
+  align-items: center;
+}
+.setting-left .icon {
+  width: 30px;
+  height: 30px;
+  background-color: #f0f4f8;
+  color: #0083FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-right: 10px;
+}
+.setting-name {
+  font-weight: 500;
+}
+.setting-arrow {
+  color: #999;
+}
+
+/* Button */
+.btn-container {
+  margin-top: 20px;
+}
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0083FF 0%, #00C2FF 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,131,255,0.3);
+}
+.btn-danger {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #f44336;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-danger:hover {
+  background: #d32f2f;
+}
+
+/* Popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.popup-content {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.popup-content h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+.popup-content p {
+  margin-bottom: 20px;
+  color: #666;
+}
+.popup-content button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0 5px;
+}
+.popup-content .btn-cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+.popup-content .btn-confirm {
+  background: #f44336;
+  color: white;
+}
+
+/* Edit Profile Form */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: #0083FF;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="back-btn" onclick="goBack()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <h1>Profil Saya</h1>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <div class="profile-avatar" id="profileAvatar">
+      <span id="avatarInitial">P</span>
+      <div class="edit-avatar" id="editAvatar">
+        <i class="fas fa-camera"></i>
+      </div>
+    </div>
+    <div class="profile-name" id="profileName">Nama Pengguna</div>
+    <div class="profile-email" id="profileEmail">email@example.com</div>
+    <div class="profile-status status-guest" id="profileStatus">Tamu</div>
+  </div>
+
+  <!-- Account Info -->
+  <div class="account-info">
+    <h2>Informasi Akun</h2>
+    <div class="info-item">
+      <div class="info-label">
+        <div class="icon"><i class="fas fa-wallet"></i></div>
+        <span>Saldo</span>
+      </div>
+      <div class="info-value" id="profileBalance">Rp 0</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">
+        <div class="icon"><i class="fas fa-calendar"></i></div>
+        <span>Bergabung</span>
+      </div>
+      <div class="info-value" id="profileJoinDate">-</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">
+        <div class="icon"><i class="fas fa-fingerprint"></i></div>
+        <span>ID Pengguna</span>
+      </div>
+      <div class="info-value" id="profileUserId">-</div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings">
+    <h2>Pengaturan</h2>
+    <div class="setting-item" id="editProfileBtn">
+      <div class="setting-left">
+        <div class="icon"><i class="fas fa-user-edit"></i></div>
+        <div class="setting-name">Edit Profil</div>
+      </div>
+      <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="setting-item" id="changePasswordBtn">
+      <div class="setting-left">
+        <div class="icon"><i class="fas fa-lock"></i></div>
+        <div class="setting-name">Ubah Kata Sandi</div>
+      </div>
+      <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="setting-item" id="notificationBtn">
+      <div class="setting-left">
+        <div class="icon"><i class="fas fa-bell"></i></div>
+        <div class="setting-name">Notifikasi</div>
+      </div>
+      <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="setting-item" id="privacyBtn">
+      <div class="setting-left">
+        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="setting-name">Privasi & Keamanan</div>
+      </div>
+      <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="setting-item" id="helpBtn">
+      <div class="setting-left">
+        <div class="icon"><i class="fas fa-question-circle"></i></div>
+        <div class="setting-name">Bantuan</div>
+      </div>
+      <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>
+  </div>
+
+  <!-- Logout Button -->
+  <div class="btn-container">
+    <button class="btn-danger" id="logoutBtn">Keluar</button>
+  </div>
+</div>
+
+<!-- Logout Popup -->
+<div class="popup-overlay" id="logoutPopup">
+  <div class="popup-content">
+    <h3>Keluar dari Akun?</h3>
+    <p>Anda akan keluar dari sesi Goopy saat ini.</p>
+    <button class="btn-cancel" id="cancelLogout">Batal</button>
+    <button class="btn-confirm" id="confirmLogout">Keluar</button>
+  </div>
+</div>
+
+<!-- Edit Profile Popup -->
+<div class="popup-overlay" id="editProfilePopup">
+  <div class="popup-content" style="text-align: left;">
+    <h3>Edit Profil</h3>
+    <div class="form-group">
+      <label for="editName">Nama</label>
+      <input type="text" id="editName" placeholder="Masukkan nama">
+    </div>
+    <div class="form-group">
+      <label for="editEmail">Email</label>
+      <input type="email" id="editEmail" placeholder="Masukkan email">
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+      <button class="btn-cancel" id="cancelEdit">Batal</button>
+      <button class="btn-primary" id="saveProfile">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Popup -->
+<div class="popup-overlay" id="changePasswordPopup">
+  <div class="popup-content" style="text-align: left;">
+    <h3>Ubah Kata Sandi</h3>
+    <div class="form-group">
+      <label for="currentPassword">Kata Sandi Saat Ini</label>
+      <input type="password" id="currentPassword" placeholder="Masukkan kata sandi saat ini">
+    </div>
+    <div class="form-group">
+      <label for="newPassword">Kata Sandi Baru</label>
+      <input type="password" id="newPassword" placeholder="Masukkan kata sandi baru">
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">Konfirmasi Kata Sandi Baru</label>
+      <input type="password" id="confirmPassword" placeholder="Konfirmasi kata sandi baru">
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+      <button class="btn-cancel" id="cancelChangePassword">Batal</button>
+      <button class="btn-primary" id="savePassword">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.GoopyAuth = firebase.auth();
+    window.GoopyDB = firebase.firestore();
+    console.log('Firebase initialized');
+  } catch(e){console.error('Firebase init error', e);}
+</script>
+
+<script>
+// --- ELEMENTS ---
+const profileName = document.getElementById('profileName');
+const profileEmail = document.getElementById('profileEmail');
+const profileStatus = document.getElementById('profileStatus');
+const profileBalance = document.getElementById('profileBalance');
+const profileJoinDate = document.getElementById('profileJoinDate');
+const profileUserId = document.getElementById('profileUserId');
+const avatarInitial = document.getElementById('avatarInitial');
+const logoutPopup = document.getElementById('logoutPopup');
+const editProfilePopup = document.getElementById('editProfilePopup');
+const changePasswordPopup = document.getElementById('changePasswordPopup');
+const editName = document.getElementById('editName');
+const editEmail = document.getElementById('editEmail');
+const currentPassword = document.getElementById('currentPassword');
+const newPassword = document.getElementById('newPassword');
+const confirmPassword = document.getElementById('confirmPassword');
+
+// --- DATA ---
+let currentUser = null;
+let userBalance = 0;
+
+// --- AUTH CHECK ---
+GoopyAuth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "./index.html";
+  } else {
+    currentUser = user;
+    setupProfile(user);
+    loadUserData();
+  }
+});
+
+function setupProfile(user) {
+  if (user.isAnonymous) {
+    profileStatus.textContent = 'Tamu';
+    profileStatus.className = 'profile-status status-guest';
+    document.getElementById('changePasswordBtn').style.display = 'none';
+  } else {
+    const name = user.displayName || 'Pengguna';
+    profileName.textContent = name;
+    profileEmail.textContent = user.email;
+    profileStatus.textContent = 'Terverifikasi';
+    profileStatus.className = 'profile-status status-verified';
+    
+    // Set avatar initial
+    const initial = name.charAt(0).toUpperCase();
+    avatarInitial.textContent = initial;
+  }
+  
+  // Set user ID
+  profileUserId.textContent = user.uid.substring(0, 8) + '...';
+  
+  // Set join date
+  if (user.metadata.creationTime) {
+    const joinDate = new Date(user.metadata.creationTime);
+    profileJoinDate.textContent = joinDate.toLocaleDateString('id-ID');
+  }
+}
+
+function loadUserData() {
+  if (currentUser) {
+    const userId = currentUser.uid;
+    
+    // Load user data from Firestore
+    GoopyDB.collection("users").doc(userId).get()
+      .then(doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          userBalance = userData.balance || 0;
+        } else {
+          // If user document doesn't exist, create it
+          if (!currentUser.isAnonymous) {
+            GoopyDB.collection("users").doc(userId).set({
+              name: currentUser.displayName || 'Pengguna',
+              email: currentUser.email,
+              balance: 0,
+              transactions: [],
+              createdAt: new Date()
+            });
+          }
+        }
+        
+        // Update UI with loaded data
+        updateBalance();
+      })
+      .catch(error => {
+        console.error("Error loading user data:", error);
+        // If there's an error, use default values
+        userBalance = 0;
+        updateBalance();
+      });
+  }
+}
+
+function updateBalance() {
+  profileBalance.textContent = `Rp ${userBalance.toLocaleString('id-ID')}`;
+}
+
+// --- EVENT LISTENERS ---
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  logoutPopup.style.display = 'flex';
+});
+
+document.getElementById('confirmLogout').addEventListener('click', () => {
+  GoopyAuth.signOut().then(() => {
+    window.location.href = "./index.html";
+  }).catch((error) => {
+    console.error('Error signing out:', error);
+  });
+});
+
+document.getElementById('cancelLogout').addEventListener('click', () => {
+  logoutPopup.style.display = 'none';
+});
+
+// Edit Profile
+document.getElementById('editProfileBtn').addEventListener('click', () => {
+  if (currentUser.isAnonymous) {
+    alert('Anda perlu mendaftar akun untuk mengedit profil');
+    return;
+  }
+  
+  editName.value = currentUser.displayName || '';
+  editEmail.value = currentUser.email || '';
+  editProfilePopup.style.display = 'flex';
+});
+
+document.getElementById('saveProfile').addEventListener('click', () => {
+  const name = editName.value.trim();
+  const email = editEmail.value.trim();
+  
+  if (!name) {
+    alert('Nama tidak boleh kosong');
+    return;
+  }
+  
+  if (!email || !email.includes('@')) {
+    alert('Email tidak valid');
+    return;
+  }
+  
+  // Update profile
+  const updates = { displayName: name };
+  
+  // Update email if it's different
+  if (email !== currentUser.email) {
+    updates.email = email;
+  }
+  
+  currentUser.updateProfile(updates)
+    .then(() => {
+      // Update name in Firestore
+      return GoopyDB.collection("users").doc(currentUser.uid).update({
+        name: name,
+        email: email,
+        updatedAt: new Date()
+      });
+    })
+    .then(() => {
+      // Update UI
+      profileName.textContent = name;
+      profileEmail.textContent = email;
+      avatarInitial.textContent = name.charAt(0).toUpperCase();
+      
+      // Close popup
+      editProfilePopup.style.display = 'none';
+      
+      alert('Profil berhasil diperbarui');
+    })
+    .catch(error => {
+      console.error('Error updating profile:', error);
+      alert('Gagal memperbarui profil: ' + error.message);
+    });
+});
+
+document.getElementById('cancelEdit').addEventListener('click', () => {
+  editProfilePopup.style.display = 'none';
+});
+
+// Change Password
+document.getElementById('changePasswordBtn').addEventListener('click', () => {
+  if (currentUser.isAnonymous) {
+    alert('Anda perlu mendaftar akun untuk mengubah kata sandi');
+    return;
+  }
+  
+  currentPassword.value = '';
+  newPassword.value = '';
+  confirmPassword.value = '';
+  changePasswordPopup.style.display = 'flex';
+});
+
+document.getElementById('savePassword').addEventListener('click', () => {
+  const current = currentPassword.value;
+  const newPass = newPassword.value;
+  const confirm = confirmPassword.value;
+  
+  if (!current || !newPass || !confirm) {
+    alert('Semua field harus diisi');
+    return;
+  }
+  
+  if (newPass.length < 6) {
+    alert('Kata sandi baru minimal 6 karakter');
+    return;
+  }
+  
+  if (newPass !== confirm) {
+    alert('Konfirmasi kata sandi tidak cocok');
+    return;
+  }
+  
+  // Reauthenticate user first
+  const credential = firebase.auth.EmailAuthProvider.credential(
+    currentUser.email,
+    current
+  );
+  
+  currentUser.reauthenticateWithCredential(credential)
+    .then(() => {
+      // Update password
+      return currentUser.updatePassword(newPass);
+    })
+    .then(() => {
+      // Close popup
+      changePasswordPopup.style.display = 'none';
+      
+      alert('Kata sandi berhasil diubah');
+    })
+    .catch(error => {
+      console.error('Error changing password:', error);
+      if (error.code === 'auth/wrong-password') {
+        alert('Kata sandi saat ini salah');
+      } else {
+        alert('Gagal mengubah kata sandi: ' + error.message);
+      }
+    });
+});
+
+document.getElementById('cancelChangePassword').addEventListener('click', () => {
+  changePasswordPopup.style.display = 'none';
+});
+
+// Other settings
+document.getElementById('notificationBtn').addEventListener('click', () => {
+  alert('Fitur notifikasi akan segera hadir');
+});
+
+document.getElementById('privacyBtn').addEventListener('click', () => {
+  alert('Fitur privasi dan keamanan akan segera hadir');
+});
+
+document.getElementById('helpBtn').addEventListener('click', () => {
+  alert('Fitur bantuan akan segera hadir');
+});
+
+// Edit avatar (placeholder)
+document.getElementById('editAvatar').addEventListener('click', () => {
+  if (currentUser.isAnonymous) {
+    alert('Anda perlu mendaftar akun untuk mengubah foto profil');
+    return;
+  }
+  
+  alert('Fitur ubah foto profil akan segera hadir');
+});
+
+// Close popups on overlay click
+window.addEventListener('click', (e) => {
+  if (e.target === logoutPopup) {
+    logoutPopup.style.display = 'none';
+  }
+  if (e.target === editProfilePopup) {
+    editProfilePopup.style.display = 'none';
+  }
+  if (e.target === changePasswordPopup) {
+    changePasswordPopup.style.display = 'none';
+  }
+});
+
+// Navigation functions
+function goBack() {
+  window.history.back();
+}
+</script>
+
+</body>
+</html>

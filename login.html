@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goopy — Masuk</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{
+  height:100vh;
+  background:linear-gradient(160deg,#007bff,#00d4ff);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;color:#fff;
+}
+
+/* ====== ANIMASI MASUK ====== */
+.container{
+  text-align:center;
+  animation:fadeIn 0.6s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+/* Garis bawah */
+.line{
+  width:0%;
+  height:3px;
+  background:#fff;
+  margin:0 auto;
+  animation:lineGrow 1.5s forwards;
+}
+@keyframes lineGrow{to{width:80%;}}
+
+.dog{
+  font-size:3rem;
+  opacity:0;
+  animation:dogPop 0.8s ease forwards;
+}
+@keyframes dogPop{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* Teks utama */
+h1{
+  font-size:2.2rem;
+  opacity:0;
+  transform:translateY(20px);
+  animation:showText 0.8s ease forwards;
+  animation-delay:1.5s;
+}
+@keyframes showText{to{opacity:1;transform:translateY(0);}}
+
+/* ====== CARD ====== */
+.loginForm{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity 0.8s ease, transform 0.8s ease;
+  display:none;
+}
+
+/* Card style */
+.card{
+  background:#fff;
+  color:#333;
+  border-radius:18px;
+  padding:24px;
+  width:90%;
+  max-width:350px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  margin:auto;
+}
+.card h2{margin-bottom:12px;color:#007bff;}
+.card input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:none;
+  border-radius:10px;
+  background:#f0f4ff;
+  font-size:1rem;
+  transition:0.25s;
+}
+.card input:focus{
+  outline:none;
+  background:#e4edff;
+}
+
+/* Tautan */
+a.link{
+  color:#7b4eff;
+  text-decoration:none;
+  font-weight:500;
+}
+a.link:hover{text-decoration:underline;}
+
+/* Tombol */
+button{
+  margin-top:14px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#007bff;
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+  transition:0.25s;
+}
+button:hover{background:#0069e4;}
+
+/* Error message */
+#msg{
+  color:#ff4444;
+  margin-top:8px;
+  min-height:20px;
+  font-size:0.9rem;
+}
+
+/* Slide keluar */
+.slideOut{
+  animation:slideLeft 0.8s ease forwards;
+}
+@keyframes slideLeft{
+  to{transform:translateX(-100%);opacity:0;}
+}
+
+/* Responsif */
+@media(max-width:600px){
+  h1{font-size:1.8rem;}
+  .card{max-width:95%;}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="intro">
+  <div class="dog">🐶</div>
+  <div class="line"></div>
+  <h1 id="welcomeText">Masuk ke Goopy</h1>
+</div>
+
+<div class="loginForm" id="loginForm">
+  <div class="card">
+    <h2>Masuk</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Masuk</button>
+    <div id="msg"></div>
+    <div style="margin-top: 15px; font-size: 0.9rem;">
+      Belum punya akun? <a href="./signup.html" class="link">Daftar</a>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.GoopyAuth = firebase.auth();
+    console.log('Firebase initialized');
+  } catch(e){console.error('Firebase init error', e);}
+</script>
+
+<script>
+const loginForm = document.getElementById("loginForm");
+
+// Cek apakah user sudah login
+GoopyAuth.onAuthStateChanged(user => {
+  if (user) {
+    // User sudah login, redirect ke home.html
+    window.location.href = "./home.html";
+  } else {
+    // User belum login, tampilkan form login
+    showLoginForm();
+  }
+});
+
+function showLoginForm() {
+  // langsung tampil setelah teks selesai muncul (2.2 detik total animasi)
+  setTimeout(()=>{
+    loginForm.style.display = "block";
+    setTimeout(()=>{
+      loginForm.style.opacity = "1";
+      loginForm.style.transform = "translateY(0)";
+    },100); // transisi smooth
+  },2200);
+}
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const msg = document.getElementById("msg");
+
+loginBtn.addEventListener("click",()=>{
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  
+  if (!email || !password) {
+    msg.textContent = "Mohon isi email dan password";
+    return;
+  }
+  
+  GoopyAuth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      document.body.classList.add("slideOut");
+      setTimeout(()=>window.location.href="./home.html",800);
+    })
+    .catch((error) => {
+      console.error("Error signing in:", error);
+      msg.textContent = "Email atau password salah. Silakan coba lagi.";
+    });
+});
+</script>
+
+</body>
+</html>

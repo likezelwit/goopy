@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goopy — Scan QR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- QR Scanner Library (html5-qrcode) -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+/* Base Styles */
+* {margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body {
+  background-color: #f0f4f8;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0083FF 0%, #00C2FF 100%);
+  color: white;
+  padding: 20px;
+  padding-top: 40px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.back-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 15px;
+}
+.header h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+.tab-nav-item {
+  flex: 1;
+  text-align: center;
+  padding: 15px 0;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s, border-bottom 0.3s;
+  border-bottom: 3px solid transparent;
+}
+.tab-nav-item.active {
+  color: #0083FF;
+  border-bottom: 3px solid #0083FF;
+}
+
+/* Main Content with Tabs */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+/* QR Scanner */
+.qr-scanner {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+.qr-scanner h2 {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.scanner-container {
+  width: 100%;
+  max-width: 300px;
+  height: 300px;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+#reader {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 15px;
+  overflow: hidden;
+}
+#reader div {
+    display: none !important;
+}
+#reader video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.scanner-frame {
+  width: 200px;
+  height: 200px;
+  border: 2px solid rgba(0,131,255,0.5);
+  border-radius: 15px;
+  position: relative;
+}
+.scanner-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-top: 3px solid #0083FF;
+  border-left: 3px solid #0083FF;
+  border-top-left-radius: 15px;
+}
+.scanner-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-top: 3px solid #0083FF;
+  border-right: 3px solid #0083FF;
+  border-top-right-radius: 15px;
+}
+.scanner-corner-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.scanner-corner-bottom::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-bottom: 3px solid #0083FF;
+  border-left: 3px solid #0083FF;
+  border-bottom-left-radius: 15px;
+}
+.scanner-corner-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-bottom: 3px solid #0083FF;
+  border-right: 3px solid #0083FF;
+  border-bottom-right-radius: 15px;
+}
+.scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0083FF, transparent);
+  animation: scan 2s infinite linear;
+}
+@keyframes scan {
+  0% { top: 0; }
+  50% { top: 100%; }
+  100% { top: 0; }
+}
+.scanner-instructions {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* My QR Code */
+.my-qr {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+.my-qr h2 {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: center;
+}
+#qrcode {
+  margin-bottom: 15px;
+}
+.qr-info {
+  text-align: center;
+  color: #666;
+  margin-bottom: 15px;
+}
+.btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #f0f0f0;
+  color: #333;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+/* Fullscreen Recipient Detail Page */
+.fullscreen-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f0f4f8;
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align to top */
+  z-index: 999; /* Below modals, above main content */
+  padding-top: 60px; /* Space for fixed header/status bar */
+  overflow-y: auto; /* Allow scrolling if content is long */
+}
+
+.fullscreen-page .inner {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 30px; /* Space at bottom */
+}
+
+.fullscreen-page .recipient-display {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.fullscreen-page .recipient-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #e6f0ff;
+  color: #0083FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin: 0 auto 15px;
+  border: 2px solid #0083FF;
+}
+
+.fullscreen-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+  color: #333;
+  word-break: break-word;
+}
+.fullscreen-page p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+.fullscreen-page .btn-primary {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#0083FF,#00C2FF);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .3s;
+}
+.fullscreen-page .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,131,255,0.3);
+}
+.fullscreen-page .btn-primary:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* Amount Input Styles (from second code) */
+.form-group {
+  margin-bottom: 15px;
+  position:relative;
+  text-align: left; /* Ensure labels are left-aligned */
+}
+.form-group label {
+  display:block;
+  margin-bottom:5px;
+  font-weight:500;
+  color:#555;
+}
+.form-group input, .form-group textarea {
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:1rem;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline:none;
+  border-color:#0083FF;
+}
+.amount-options {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:15px;
+}
+.amount-option {
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background-color: #fff; /* Ensure options are white */
+}
+.amount-option.selected {
+  border-color:#0083FF;
+  background:#e6f0ff;
+  color:#0083FF;
+  font-weight:600;
+}
+/* Ensure the input for amount is not overriding general input styles in full-screen page */
+#paymentAmountFullscreen {
+  margin-top: 10px;
+}
+
+
+/* PIN Modal (re-using old styles, renamed for clarity) */
+.pin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+.pin-modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.pin-modal-content h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+.pin-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.pin-input {
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.pin-input::-webkit-outer-spin-button,
+.pin-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.pin-modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+.pin-modal-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+.btn-primary {
+  background: #0083FF;
+  color: white;
+}
+#pinError {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  display: none;
+}
+
+/* Receipt Modal */
+.receipt-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.receipt-modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  animation: popIn 0.3s ease;
+  position: relative;
+}
+.receipt-modal-content .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #aaa;
+  cursor: pointer;
+}
+.receipt-modal-content h3 {
+  color: #0083FF;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.receipt-modal-content h3 i {
+  color: #28a745;
+}
+.receipt-details {
+  text-align: left;
+  margin-top: 20px;
+  border-top: 1px dashed #eee;
+  padding-top: 20px;
+}
+.receipt-details div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.receipt-details div span:first-child {
+  color: #666;
+  font-weight: 500;
+}
+.receipt-details div span:last-child {
+  color: #333;
+  font-weight: 600;
+}
+.receipt-details .total-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0083FF;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+.receipt-modal-content .btn-primary {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+}
+
+/* Loading Overlay */
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none; /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 1100; /* Highest z-index */
+}
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #0083FF;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="back-btn" onclick="goBack()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <h1>Scan QR</h1>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-nav">
+  <div class="tab-nav-item active" data-tab="scan-qr">Scan QR</div>
+  <div class="tab-nav-item" data-tab="my-qr">QRIS Saya</div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+  <!-- Tab Content: Scan QR -->
+  <div class="tab-content active" id="tab-scan-qr">
+    <div class="qr-scanner">
+      <h2>Scan QR Code</h2>
+      <div class="scanner-container">
+        <div id="reader"></div>
+        <div class="scanner-overlay">
+          <div class="scanner-frame">
+            <div class="scanner-corner-bottom"></div>
+            <div class="scanner-line"></div>
+          </div>
+        </div>
+      </div>
+      <p class="scanner-instructions">Arahkan kamera ke QR Code untuk melakukan pembayaran</p>
+    </div>
+  </div>
+
+  <!-- Tab Content: My QR Code -->
+  <div class="tab-content" id="tab-my-qr">
+    <div class="my-qr">
+      <h2>QR Code Saya</h2>
+      <div class="qr-container">
+        <div id="qrcode"></div>
+        <p class="qr-info">Tunjukkan QR Code ini untuk menerima pembayaran</p>
+        <button class="btn-secondary" onclick="copyQRCode()">Salin QR Code</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen Recipient Detail and Payment Page -->
+<div id="recipientDetailPage" class="fullscreen-page">
+  <div class="inner">
+    <div class="recipient-display">
+      <div class="recipient-avatar-large" id="recipientAvatarLarge"><i class="fas fa-user"></i></div>
+      <h2 id="recipientNameFull">Nama Pengguna</h2>
+      <p id="recipientPhoneFull">Nomor Telepon: Tidak Tersedia</p>
+    </div>
+
+    <div class="form-group">
+      <label for="paymentAmountFullscreen">Jumlah Pembayaran</label>
+      <div class="amount-options" id="amountOptionsFullscreen">
+        <div class="amount-option" data-amount="10000">Rp 10.000</div>
+        <div class="amount-option" data-amount="25000">Rp 25.000</div>
+        <div class="amount-option" data-amount="50000">Rp 50.000</div>
+      </div>
+      <input type="number" id="paymentAmountFullscreen" placeholder="Masukkan jumlah lainnya" inputmode="numeric">
+    </div>
+
+    <div class="form-group">
+      <label for="paymentNoteFullscreen">Catatan (Opsional)</label>
+      <textarea id="paymentNoteFullscreen" placeholder="Tambahkan catatan"></textarea>
+    </div>
+
+    <button class="btn-primary" id="confirmPaymentBtn" disabled onclick="proceedToPin()">Benar, Ini</button>
+    <button class="btn-secondary" style="margin-top: 10px; width: 100%;" onclick="closeRecipientDetailPage()">Batalkan</button>
+  </div>
+</div>
+
+
+<!-- PIN Modal -->
+<div class="pin-modal-overlay" id="pinModal">
+  <div class="pin-modal-content">
+    <h3>Masukkan PIN Anda</h3>
+    <div class="pin-input-container">
+      <input type="number" class="pin-input" id="pin1" maxlength="1" inputmode="numeric">
+      <input type="number" class="pin-input" id="pin2" maxlength="1" inputmode="numeric">
+      <input type="number" class="pin-input" id="pin3" maxlength="1" inputmode="numeric">
+      <input type="number" class="pin-input" id="pin4" maxlength="1" inputmode="numeric">
+      <input type="number" class="pin-input" id="pin5" maxlength="1" inputmode="numeric">
+      <input type="number" class="pin-input" id="pin6" maxlength="1" inputmode="numeric">
+    </div>
+    <p id="pinError" class="error-message">PIN salah. Silakan coba lagi.</p>
+    <div class="pin-modal-buttons">
+      <button class="btn-cancel" onclick="closePinModal()">Batal</button>
+      <button class="btn-primary" onclick="verifyPin()">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="receipt-modal-overlay" id="receiptModal">
+  <div class="receipt-modal-content">
+    <button class="close-btn" onclick="closeReceiptModal()">&times;</button>
+    <h3><i class="fas fa-check-circle"></i> Pembayaran Berhasil!</h3>
+    <div class="receipt-details">
+      <div>
+        <span>Pengirim</span>
+        <span id="receiptSender"></span>
+      </div>
+      <div>
+        <span>Penerima</span>
+        <span id="receiptReceiver"></span>
+      </div>
+      <div>
+        <span>Tanggal</span>
+        <span id="receiptDate"></span>
+      </div>
+      <div>
+        <span>Waktu</span>
+        <span id="receiptTime"></span>
+      </div>
+      <div>
+        <span>ID Transaksi</span>
+        <span id="receiptTransactionId"></span>
+      </div>
+      <div class="total-amount">
+        <span>Jumlah</span>
+        <span id="receiptAmount"></span>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="closeReceiptAndGoHome()">Selesai</button>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- QR Code Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+};
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.GoopyAuth = firebase.auth();
+    window.GoopyDB = firebase.firestore();
+    console.log('Firebase initialized');
+  } catch(e){console.error('Firebase init error', e);}
+</script>
+
+<script>
+// --- ELEMENTS ---
+const mainContent = document.getElementById('mainContent');
+const recipientDetailPage = document.getElementById('recipientDetailPage');
+const recipientNameFull = document.getElementById('recipientNameFull');
+const recipientPhoneFull = document.getElementById('recipientPhoneFull');
+const paymentAmountFullscreen = document.getElementById('paymentAmountFullscreen');
+const paymentNoteFullscreen = document.getElementById('paymentNoteFullscreen');
+const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+const amountOptionsFullscreen = document.getElementById('amountOptionsFullscreen'); // New element for options
+
+const pinModal = document.getElementById('pinModal');
+const pinInputs = document.querySelectorAll('.pin-input');
+const pinError = document.getElementById('pinError');
+const receiptModal = document.getElementById('receiptModal');
+const receiptSender = document.getElementById('receiptSender');
+const receiptReceiver = document.getElementById('receiptReceiver');
+const receiptDate = document.getElementById('receiptDate');
+const receiptTime = document.getElementById('receiptTime');
+const receiptTransactionId = document.getElementById('receiptTransactionId');
+const receiptAmount = document.getElementById('receiptAmount');
+const loadingOverlay = document.getElementById('loadingOverlay'); // Loading overlay element
+
+// Tab elements
+const tabNavItems = document.querySelectorAll('.tab-nav-item');
+const tabContents = document.querySelectorAll('.tab-content');
+
+// --- DATA ---
+let currentUser = null;
+let currentUserId = null;
+let currentUserData = null;
+let userBalance = 0;
+let userPin = null;
+let scannedUserId = null;
+let scannedUserData = null;
+let paymentAmount = 0; // Store the amount to be paid
+let paymentNote = ''; // Store the payment note
+
+// --- QR SCANNER INSTANCE ---
+let html5QrCode = null;
+
+// --- AUTH CHECK ---
+GoopyAuth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "./index.html";
+  } else {
+    currentUser = user;
+    currentUserId = user.uid;
+    loadUserData();
+    generateQRCode();
+    // Start scanner only if the "Scan QR" tab is active initially
+    if (document.getElementById('tab-scan-qr').classList.contains('active')) {
+      startQrScanner();
+    }
+  }
+});
+
+async function loadUserData() {
+  if (currentUser) {
+    const userId = currentUser.uid;
+    try {
+      const doc = await GoopyDB.collection("users").doc(userId).get();
+      if (doc.exists) {
+        currentUserData = doc.data();
+        userBalance = currentUserData.balance || 0;
+        userPin = currentUserData.pin || null;
+      } else {
+        if (!currentUser.isAnonymous) {
+          currentUserData = {
+            name: currentUser.displayName || 'Pengguna Goopy',
+            email: currentUser.email,
+            phone: currentUser.phoneNumber || 'Tidak Tersedia',
+            balance: 0,
+            transactions: [],
+            pin: null,
+            createdAt: new Date()
+          };
+          await GoopyDB.collection("users").doc(userId).set(currentUserData);
+        }
+      }
+    } catch(error) {
+      console.error("Error loading user data:", error);
+      userBalance = 0;
+      currentUserData = { name: 'Pengguna Goopy', phone: 'Tidak Tersedia', balance: 0, transactions: [] };
+    }
+  }
+}
+
+// Generate QR Code for "My QRIS" tab
+function generateQRCode() {
+  const qrcodeContainer = document.getElementById('qrcode');
+  qrcodeContainer.innerHTML = '';
+  
+  if (currentUser && currentUser.uid) {
+    new QRCode(qrcodeContainer, {
+      text: currentUser.uid,
+      width: 200,
+      height: 200,
+      colorDark: "#0083FF",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  } else {
+    console.warn("Current user not available to generate QR code.");
+  }
+}
+
+// Copy QR Code
+function copyQRCode() {
+  const qrText = currentUser.uid;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(qrText)
+      .then(() => {
+        alert('QR Code berhasil disalin!');
+      })
+      .catch(err => {
+        console.error('Error copying text: ', err);
+        alert('Gagal menyalin QR Code. Silakan coba lagi.');
+      });
+  } else {
+    const textArea = document.createElement('textarea');
+    textArea.value = qrText;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      alert('QR Code berhasil disalin!');
+    } catch (err) {
+      console.error('Error copying text: ', err);
+      alert('Gagal menyalin QR Code. Silakan coba lagi.');
+    }
+    document.body.removeChild(textArea);
+  }
+}
+
+// --- TAB SWITCHING LOGIC ---
+tabNavItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const targetTab = item.dataset.tab;
+
+    tabNavItems.forEach(nav => nav.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    item.classList.add('active');
+    document.getElementById(`tab-${targetTab}`).classList.add('active');
+
+    if (targetTab === 'scan-qr') {
+      startQrScanner();
+    } else {
+      stopQrScanner();
+    }
+  });
+});
+
+// --- QR SCANNER LOGIC ---
+async function startQrScanner() {
+  if (html5QrCode && html5QrCode.isScanning) {
+    console.log("Scanner is already running.");
+    return;
+  }
+  if (!html5QrCode) {
+    html5QrCode = new Html5Qrcode("reader");
+  }
+
+  const config = {
+    fps: 10,
+    qrbox: { width: 200, height: 200 }
+  };
+
+  try {
+    const cameras = await Html5QrCode.getCameras();
+    if (cameras && cameras.length) {
+      const rearCamera = cameras.find(camera => camera.label.toLowerCase().includes('back')) || cameras[0];
+      await html5QrCode.start(
+        rearCamera.id,
+        config,
+        onScanSuccess,
+        onScanError
+      );
+      console.log("QR Scanner started successfully with camera:", rearCamera.label);
+    } else {
+      console.error("No cameras found.");
+      alert("Tidak ada kamera yang ditemukan. Pastikan Anda memberikan izin kamera.");
+    }
+  } catch (error) {
+    console.error("Error starting QR scanner:", error);
+    alert("Gagal memulai kamera. Pastikan Anda memberikan izin kamera.");
+  }
+}
+
+async function stopQrScanner() {
+  if (html5QrCode && html5QrCode.isScanning) {
+    try {
+      await html5QrCode.stop();
+      console.log("QR scanner stopped.");
+    } catch (error) {
+      console.warn("Error stopping existing QR scanner:", error);
+    }
+  }
+}
+
+async function onScanSuccess(decodedText, decodedResult) {
+  console.log(`QR Code detected: ${decodedText}`);
+  await stopQrScanner();
+  showLoadingOverlay(); // Show loading overlay
+
+  // Simulate a network request for a brief moment
+  setTimeout(async () => {
+    hideLoadingOverlay(); // Hide loading overlay
+
+    if (decodedText === currentUserId) {
+      alert("Anda tidak bisa membayar diri sendiri. Silakan pindai QR Code pengguna lain.");
+      startQrScanner();
+      return;
+    }
+
+    scannedUserId = decodedText;
+    await fetchScannedUserData(scannedUserId);
+  }, 1000); // 1 second loading time
+}
+
+function onScanError(errorMessage) {
+  // console.warn(`QR Code scanning error: ${errorMessage}`);
+}
+
+async function fetchScannedUserData(userId) {
+  try {
+    const userDoc = await GoopyDB.collection("users").doc(userId).get();
+    if (userDoc.exists) {
+      scannedUserData = userDoc.data();
+      recipientNameFull.textContent = scannedUserData.name || 'Pengguna Goopy';
+      recipientPhoneFull.textContent = `Nomor Telepon: ${scannedUserData.phone || 'Tidak Tersedia'}`;
+      
+      // Clear previous inputs and selections
+      paymentAmountFullscreen.value = '';
+      paymentNoteFullscreen.value = '';
+      document.querySelectorAll('#amountOptionsFullscreen .amount-option').forEach(o => o.classList.remove("selected"));
+      paymentAmount = 0; // Reset amount
+
+      mainContent.style.display = 'none';
+      recipientDetailPage.style.display = 'flex';
+      checkPaymentReady(); // Enable/disable button based on initial state
+    } else {
+      alert("QR Code tidak valid atau pengguna tidak ditemukan.");
+      scannedUserId = null;
+      scannedUserData = null;
+      startQrScanner();
+    }
+  } catch (error) {
+    console.error("Error fetching scanned user data:", error);
+    alert("Terjadi kesalahan saat mengambil data pengguna.");
+    scannedUserId = null;
+    scannedUserData = null;
+    startQrScanner();
+  }
+}
+
+// Close Recipient Detail Page
+function closeRecipientDetailPage() {
+  recipientDetailPage.style.display = 'none';
+  mainContent.style.display = 'flex'; // Show main content again
+  scannedUserId = null;
+  scannedUserData = null;
+  paymentAmount = 0;
+  paymentNote = '';
+  startQrScanner(); // Restart scanner after closing page
+}
+
+// Amount selection on fullscreen page
+amountOptionsFullscreen.querySelectorAll(".amount-option").forEach(opt => {
+  opt.onclick = () => {
+    amountOptionsFullscreen.querySelectorAll(".amount-option").forEach(o => o.classList.remove("selected"));
+    opt.classList.add("selected");
+    paymentAmount = parseInt(opt.dataset.amount);
+    paymentAmountFullscreen.value = ""; // Clear manual input if option selected
+    checkPaymentReady();
+  };
+});
+
+paymentAmountFullscreen.oninput = (e) => {
+  paymentAmount = parseInt(e.target.value) || 0;
+  amountOptionsFullscreen.querySelectorAll(".amount-option").forEach(o => o.classList.remove("selected"));
+  checkPaymentReady();
+};
+
+paymentNoteFullscreen.oninput = (e) => {
+    paymentNote = e.target.value.trim();
+};
+
+function checkPaymentReady() {
+  confirmPaymentBtn.disabled = !(scannedUserData && paymentAmount > 0 && paymentAmount <= userBalance);
+}
+
+// Proceed to PIN entry (re-using existing logic)
+function proceedToPin() {
+  paymentAmount = parseInt(paymentAmountFullscreen.value) || paymentAmount; // Prioritize manual input
+  paymentNote = paymentNoteFullscreen.value.trim();
+
+  if (!paymentAmount || paymentAmount <= 0) {
+    alert('Masukkan jumlah pembayaran yang valid');
+    return;
+  }
+  
+  if (paymentAmount > userBalance) {
+    alert(`Saldo tidak mencukupi. Saldo Anda: Rp ${userBalance.toLocaleString('id-ID')}`);
+    return;
+  }
+
+  if (userPin) {
+    recipientDetailPage.style.display = 'none'; // Hide recipient detail page
+    pinModal.style.display = 'flex';
+    pinInputs[0].focus();
+    pinError.style.display = 'none';
+    pinInputs.forEach(input => input.value = '');
+  } else {
+    if (confirm("Anda belum mengatur PIN. Lanjutkan pembayaran tanpa PIN?")) {
+      confirmPayment();
+    } else {
+      closeRecipientDetailPage(); // Go back to recipient detail page
+    }
+  }
+}
+
+// Close PIN modal (modified to go back to recipient detail page)
+function closePinModal() {
+  pinModal.style.display = 'none';
+  recipientDetailPage.style.display = 'flex'; // Go back to recipient detail page
+  pinInputs.forEach(input => input.value = '');
+  pinError.style.display = 'none';
+}
+
+// Verify PIN
+async function verifyPin() {
+  const enteredPin = Array.from(pinInputs).map(input => input.value).join('');
+
+  if (enteredPin.length !== 6) {
+    pinError.textContent = "PIN harus 6 digit.";
+    pinError.style.display = 'block';
+    return;
+  }
+
+  if (enteredPin === userPin) {
+    pinError.style.display = 'none';
+    pinModal.style.display = 'none'; // Close PIN modal
+    await confirmPayment();
+  } else {
+    pinError.textContent = "PIN salah. Silakan coba lagi.";
+    pinError.style.display = 'block';
+    pinInputs.forEach(input => input.value = '');
+    pinInputs[0].focus();
+  }
+}
+
+// Confirm payment logic
+async function confirmPayment() {
+  if (!scannedUserId || !scannedUserData) {
+    alert("Data penerima tidak valid. Silakan coba pindai ulang.");
+    closeRecipientDetailPage();
+    return;
+  }
+
+  showLoadingOverlay(); // Show loading during transaction
+  try {
+    const senderRef = GoopyDB.collection("users").doc(currentUserId);
+    await GoopyDB.runTransaction(async (transaction) => {
+      const senderDoc = await transaction.get(senderRef);
+      if (!senderDoc.exists) {
+        throw new Error("Dokumen pengirim tidak ditemukan!");
+      }
+      const currentSenderBalance = senderDoc.data().balance || 0;
+      if (currentSenderBalance < paymentAmount) {
+        throw new Error("Saldo tidak mencukupi untuk pembayaran ini.");
+      }
+
+      transaction.update(senderRef, {
+        balance: currentSenderBalance - paymentAmount,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+
+    const receiverRef = GoopyDB.collection("users").doc(scannedUserId);
+    await GoopyDB.runTransaction(async (transaction) => {
+      const receiverDoc = await transaction.get(receiverRef);
+      if (!receiverDoc.exists) {
+        throw new Error("Dokumen penerima tidak ditemukan!");
+      }
+      const currentReceiverBalance = receiverDoc.data().balance || 0;
+      transaction.update(receiverRef, {
+        balance: currentReceiverBalance + paymentAmount,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+
+    const transactionId = 'TRX' + Math.random().toString(36).substring(2, 15).toUpperCase();
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+    const senderTransaction = {
+      id: transactionId,
+      type: 'out',
+      amount: paymentAmount,
+      description: `Pembayaran ke ${scannedUserData.name || 'Pengguna Lain'}`,
+      targetUserId: scannedUserId,
+      targetUserName: scannedUserData.name || 'Pengguna Lain',
+      note: paymentNote,
+      timestamp: timestamp,
+      icon: 'fa-arrow-circle-up'
+    };
+
+    const receiverTransaction = {
+      id: transactionId,
+      type: 'in',
+      amount: paymentAmount,
+      description: `Pembayaran dari ${currentUserData.name || 'Pengguna Goopy'}`,
+      targetUserId: currentUserId,
+      targetUserName: currentUserData.name || 'Pengguna Goopy',
+      note: paymentNote,
+      timestamp: timestamp,
+      icon: 'fa-arrow-circle-down'
+    };
+
+    await GoopyDB.collection("users").doc(currentUserId).update({
+      transactions: firebase.firestore.FieldValue.arrayUnion(senderTransaction)
+    });
+    await GoopyDB.collection("users").doc(scannedUserId).update({
+      transactions: firebase.firestore.FieldValue.arrayUnion(receiverTransaction)
+    });
+
+    userBalance -= paymentAmount;
+    currentUserData.balance = userBalance;
+
+    hideLoadingOverlay();
+    showReceipt(transactionId, paymentAmount, currentUserData.name, scannedUserData.name);
+
+  } catch (error) {
+    hideLoadingOverlay();
+    console.error("Error during payment transaction:", error);
+    alert(`Pembayaran gagal: ${error.message || error}. Silakan coba lagi.`);
+    closeRecipientDetailPage(); // Go back to recipient detail page on failure
+  }
+}
+
+function showReceipt(transactionId, amount, senderName, receiverName) {
+  const now = new Date();
+  receiptSender.textContent = senderName;
+  receiptReceiver.textContent = receiverName;
+  receiptDate.textContent = now.toLocaleDateString('id-ID');
+  receiptTime.textContent = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+  receiptTransactionId.textContent = transactionId;
+  receiptAmount.textContent = `Rp ${amount.toLocaleString('id-ID')}`;
+
+  receiptModal.style.display = 'flex';
+}
+
+function closeReceiptModal() {
+  receiptModal.style.display = 'none';
+  scannedUserId = null;
+  scannedUserData = null;
+  paymentAmount = 0;
+  paymentNote = '';
+  // Based on current active tab, restart scanner or do nothing
+  if (document.getElementById('tab-scan-qr').classList.contains('active')) {
+    startQrScanner();
+  }
+}
+
+function closeReceiptAndGoHome() {
+  closeReceiptModal();
+  window.location.href = './home.html';
+}
+
+// PIN input navigation
+pinInputs.forEach((input, index) => {
+  input.addEventListener('input', (e) => {
+    if (e.target.value.length === 1 && index < pinInputs.length - 1) {
+      pinInputs[index + 1].focus();
+    }
+    pinError.style.display = 'none';
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+      pinInputs[index - 1].focus();
+    }
+  });
+});
+
+// Loading Overlay functions
+function showLoadingOverlay() {
+  loadingOverlay.style.display = 'flex';
+}
+
+function hideLoadingOverlay() {
+  loadingOverlay.style.display = 'none';
+}
+
+
+// Navigation functions
+function goBack() {
+  window.history.back();
+}
+
+// Ensure scanner stops when leaving the page
+window.addEventListener('beforeunload', async () => {
+  await stopQrScanner();
+});
+
+// Initial tab load (activate the first tab by default)
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.tab-nav-item.active').click();
+    // Also attach listeners for amount input and options on the fullscreen page
+    paymentAmountFullscreen.addEventListener('input', checkPaymentReady);
+    amountOptionsFullscreen.querySelectorAll('.amount-option').forEach(option => {
+        option.addEventListener('click', checkPaymentReady);
+    });
+});
+</script>
+
+</body>
+</html>

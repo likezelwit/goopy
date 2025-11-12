@@ -1,0 +1,46 @@
+/* style.css - Goopy global styles (mobile-first) */
+:root{
+  --bg1:#0066cc; --bg2:#0088ff; --accent:#00d4b3; --white:#fff; --muted: rgba(255,255,255,0.9);
+  --card: rgba(255,255,255,0.06);
+  --radius:14px;
+  --glass: rgba(255,255,255,0.06);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--white);-webkit-font-smoothing:antialiased;}
+.container{max-width:430px;margin:22px auto;padding:16px;}
+
+/* card */
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));padding:14px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.25);}
+
+/* header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#00baff,#0066ff);display:flex;align-items:center;justify-content:center;font-weight:700}
+.profile-sml{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center}
+
+/* balance */
+.balance{font-size:13px;opacity:0.95}
+.amount{font-size:28px;font-weight:700;margin-top:6px}
+
+/* actions */
+.row{display:flex;gap:10px;margin-top:12px}
+.btn{background:var(--accent);border:none;padding:10px 12px;border-radius:12px;color:#012;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--white)}
+
+/* list */
+.list{margin-top:12px}
+.tx{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+
+/* form */
+.form{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.input{padding:12px;border-radius:10px;border:none;font-size:15px}
+.small{font-size:13px;opacity:0.9}
+
+/* footer nav */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;display:flex;gap:12px;background:rgba(0,0,0,0.12);padding:8px;border-radius:999px}
+.nav a{color:var(--white);text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
+
+/* responsive */
+@media(min-width:800px){body{padding:24px} .container{margin:48px auto}}
