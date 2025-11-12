@@ -22,16 +22,13 @@
     box-shadow:0 6px 20px rgba(0,0,0,0.25);text-align:center;
   }
   .card h2{margin-bottom:20px;color:#007bff;font-weight:600;font-size:1.6rem;}
-
   .input{width:100%;padding:12px;margin:8px 0;border:none;
     border-radius:10px;background:#f0f4ff;font-size:1rem;transition:0.25s;}
   .input:focus{outline:none;background:#e4edff;}
-
   .btn{margin-top:12px;width:100%;padding:12px;border:none;
     border-radius:10px;background:#007bff;color:white;
     font-size:1.05rem;cursor:pointer;transition:0.3s;}
   .btn:hover{background:#0069e4;}
-
   .small{margin-top:10px;font-size:0.9rem;}
   .small a{color:#7b4eff;text-decoration:none;font-weight:500;}
   .small a:hover{text-decoration:underline;}
@@ -48,12 +45,10 @@
   .popup button{margin-top:12px;padding:8px 16px;background:#007bff;
     border:none;color:white;border-radius:8px;cursor:pointer;}
   .popup button:hover{background:#0069e4;}
-
   .input-group{position:relative;margin:8px 0;}
   .input-group .input{padding-left:40px;}
   .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
     color:#007bff;font-size:1rem;}
-  @media(max-width:600px){.card{max-width:95%;padding:28px 20px;}.card h2{font-size:1.4rem;}}
 </style>
 
 <!-- Firebase SDK -->
@@ -71,7 +66,6 @@ const firebaseConfig = {
   appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
 };
 firebase.initializeApp(firebaseConfig);
-
 const GoopyAuth = firebase.auth();
 const GoopyDB = firebase.firestore();
 </script>
@@ -82,19 +76,19 @@ const GoopyDB = firebase.firestore();
     <h2>Buat akun Goopy</h2>
     <div class="form">
       <div class="input-group"><i class="fas fa-user input-icon"></i>
-        <input id="su_name" class="input" placeholder="Nama lengkap" type="text" autocomplete="off" required>
+        <input id="su_name" class="input" placeholder="Nama lengkap" type="text" required>
       </div>
       <div class="input-group"><i class="fas fa-user-tag input-icon"></i>
-        <input id="su_username" class="input" placeholder="Username unik" type="text" autocomplete="off" required>
+        <input id="su_username" class="input" placeholder="Username unik" type="text" required>
       </div>
       <div class="input-group"><i class="fas fa-envelope input-icon"></i>
-        <input id="su_email" class="input" placeholder="Email" type="email" autocomplete="off" required>
+        <input id="su_email" class="input" placeholder="Email" type="email" required>
       </div>
       <div class="input-group"><i class="fas fa-phone input-icon"></i>
-        <input id="su_phone" class="input" placeholder="Nomor Telepon" type="tel" autocomplete="off" required>
+        <input id="su_phone" class="input" placeholder="Nomor Telepon" type="tel" required>
       </div>
       <div class="input-group"><i class="fas fa-lock input-icon"></i>
-        <input id="su_password" class="input" placeholder="Password (min 6)" type="password" autocomplete="new-password" required>
+        <input id="su_password" class="input" placeholder="Password (min 6)" type="password" required>
       </div>
       <button id="btnSignup" class="btn">Daftar</button>
       <div class="small">Sudah punya akun? <a href="./login.html">Masuk</a></div>
@@ -115,7 +109,7 @@ const GoopyDB = firebase.firestore();
 // 🔹 Redirect otomatis jika sudah login
 GoopyAuth.onAuthStateChanged(user => { if(user) window.location.href="./home.html"; });
 
-// 🔹 Popup
+// 🔹 Popup system
 function showPopup(title,message,type="info"){
   const popup=document.getElementById("popup");
   popup.querySelector("h3").textContent=title;
@@ -125,7 +119,7 @@ function showPopup(title,message,type="info"){
 }
 document.getElementById("popupBtn").addEventListener("click",()=>{document.getElementById("popup").classList.remove("show");});
 
-// 🔹 Validasi nomor telepon
+// 🔹 Nomor HP
 function validatePhoneNumber(phone){
   if(!phone) return false;
   const cleaned = phone.replace(/[^\d+]/g,'');
@@ -139,7 +133,7 @@ function formatPhoneNumber(phone){
   return cleaned;
 }
 
-// 🔹 Signup function (versi fix Auth sinkron)
+// 🔹 Signup Function — Versi lengkap
 async function signup(email,password,name,phone,username){
   console.log("🔹 Mulai signup...");
   const userCredential = await GoopyAuth.createUserWithEmailAndPassword(email,password);
@@ -148,14 +142,16 @@ async function signup(email,password,name,phone,username){
 
   await user.updateProfile({ displayName:name });
 
-  // 🔸 Tunggu hingga Auth siap (supaya request.auth.uid == uid)
+  // Tunggu auth siap
   await new Promise(resolve=>{
     const unsub = GoopyAuth.onAuthStateChanged(u=>{
-      if(u && u.uid === uid){ resolve(); unsub(); }
+      if(u && u.uid===uid){ resolve(); unsub(); }
     });
   });
 
   const formattedPhone = formatPhoneNumber(phone);
+  const now = new Date();
+
   const userData = {
     uid,
     name,
@@ -164,9 +160,26 @@ async function signup(email,password,name,phone,username){
     phone: formattedPhone,
     pin: "",
     balance: 0,
-    transactions: [],
+    verified: false,
+    createdAt: now,
+    lastLogin: now,
     recentContacts: [],
-    createdAt: new Date()
+    transactions: [],
+    security: {
+      twoFactor: false,
+      loginAttempts: 0,
+      lastFailed: null
+    },
+    settings: {
+      theme: "light",
+      language: "id",
+      notifications: true
+    },
+    deviceInfo: {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language
+    }
   };
 
   console.log("🟢 Simpan data user ke Firestore:", userData);
@@ -175,7 +188,7 @@ async function signup(email,password,name,phone,username){
   return user;
 }
 
-// 🔹 Handle tombol daftar
+// 🔹 Tombol Daftar
 document.getElementById('btnSignup').addEventListener('click', async ()=>{
   const n = document.getElementById('su_name').value.trim();
   const u = document.getElementById('su_username').value.trim();
@@ -187,9 +200,8 @@ document.getElementById('btnSignup').addEventListener('click', async ()=>{
     showPopup("⚠️ Peringatan","Lengkapi semua field. Password minimal 6 karakter.","error");
     return;
   }
-
   if(!validatePhoneNumber(p)){
-    showPopup("⚠️ Nomor tidak valid","Masukkan nomor telepon valid dengan kode negara.","error");
+    showPopup("⚠️ Nomor tidak valid","Masukkan nomor telepon valid.","error");
     return;
   }
 
@@ -204,7 +216,7 @@ document.getElementById('btnSignup').addEventListener('click', async ()=>{
     else if(err.code==='auth/weak-password')
       showPopup("❌ Password terlalu lemah","Gunakan password minimal 6 karakter.","error");
     else if(err.code==='permission-denied')
-      showPopup("❌ Gagal menyimpan data","Periksa aturan Firestore (rules).","error");
+      showPopup("❌ Gagal menyimpan data","Periksa aturan Firestore.","error");
     else
       showPopup("❌ Pendaftaran gagal",err.message || "Terjadi kesalahan.","error");
   }
