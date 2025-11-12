@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Goopy — Daftar</title>
+
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
   body{
@@ -55,6 +56,7 @@
   @media(max-width:600px){.card{max-width:95%;padding:28px 20px;}.card h2{font-size:1.4rem;}}
 </style>
 
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -69,6 +71,7 @@ const firebaseConfig = {
   appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
 };
 firebase.initializeApp(firebaseConfig);
+
 const GoopyAuth = firebase.auth();
 const GoopyDB = firebase.firestore();
 </script>
@@ -100,6 +103,7 @@ const GoopyDB = firebase.firestore();
   </div>
 </div>
 
+<!-- Popup UI -->
 <div id="popup" class="popup">
   <h3></h3><p></p>
   <button id="popupBtn">Oke</button>
@@ -108,8 +112,10 @@ const GoopyDB = firebase.firestore();
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <script>
+// 🔹 Auto redirect jika user sudah login
 GoopyAuth.onAuthStateChanged(user => { if(user) window.location.href="./home.html"; });
 
+// 🔹 Popup system
 function showPopup(title,message,type="info"){
   const popup=document.getElementById("popup");
   popup.querySelector("h3").textContent=title;
@@ -119,13 +125,13 @@ function showPopup(title,message,type="info"){
 }
 document.getElementById("popupBtn").addEventListener("click",()=>{document.getElementById("popup").classList.remove("show");});
 
+// 🔹 Validasi & format nomor HP
 function validatePhoneNumber(phone){
   if(!phone) return false;
   const cleaned = phone.replace(/[^\d+]/g,'');
   const digitsOnly = cleaned.replace(/\D/g,'');
   return digitsOnly.length >=6 && digitsOnly.length <=15;
 }
-
 function formatPhoneNumber(phone){
   if(!phone) return "";
   let cleaned = phone.replace(/[^\d+]/g,'');
@@ -133,7 +139,7 @@ function formatPhoneNumber(phone){
   return cleaned;
 }
 
-// SIGNUP FUNCTION (versi fix)
+// 🔹 SIGNUP FUNCTION
 async function signup(email,password,name,phone,username){
   console.log("🔹 Mulai signup...");
 
@@ -153,17 +159,16 @@ async function signup(email,password,name,phone,username){
     balance: 0,
     transactions: [],
     recentContacts: [],
-    createdAt: new Date() // ✅ Fix: gunakan timestamp JS agar rules lolos
+    createdAt: new Date() // pakai timestamp JS agar rules aman
   };
 
   console.log("🟢 Simpan data user ke Firestore:", userData);
-
   await GoopyDB.collection("users").doc(uid).set(userData);
   console.log("✅ Data Firestore berhasil dibuat");
   return userCredential.user;
 }
 
-// HANDLE SIGNUP BUTTON
+// 🔹 Handle tombol daftar
 document.getElementById('btnSignup').addEventListener('click', async ()=>{
   const n = document.getElementById('su_name').value.trim();
   const u = document.getElementById('su_username').value.trim();
