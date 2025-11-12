@@ -8,49 +8,34 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
+/* Sama seperti sebelumnya (styling tidak berubah) */
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
 body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
-
-/* Header */
 .header{background:linear-gradient(135deg,#0083FF 0%,#00C2FF 100%);color:white;padding:20px;padding-top:40px;border-radius:0 0 25px 25px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .header h1{font-size:1.2rem;font-weight:600;}
 .profile-icon{width:35px;height:35px;border-radius:50%;background-color:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;}
-
-/* Saldo */
 .balance-card{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:15px;padding:20px;text-align:center;}
 .balance-label{font-size:0.9rem;opacity:0.9;}
 .balance-amount{font-size:2.5rem;font-weight:700;margin:10px 0;}
 .balance-amount span{font-size:1.5rem;font-weight:400;}
 .user-info{font-size:0.9rem;opacity:0.9;}
-
-/* Main */
 .main-content{flex-grow:1;padding:20px;display:flex;flex-direction:column;gap:20px;}
-
-/* Menu Cepat */
-.quick-actions{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.quick-actions h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
+.quick-actions,.other-features,.transaction-history{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.quick-actions h2,.other-features h2,.transaction-history h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
 .action-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
 .action-item{display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;transition:transform 0.2s;}
 .action-item:hover{transform:translateY(-3px);}
 .action-item .icon{width:50px;height:50px;background-color:#e6f0ff;color:#0083FF;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:8px;}
 .action-item .label{font-size:0.8rem;color:#666;}
-
-/* Layanan Lain */
-.other-features{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.other-features h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;}
 .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
 .feature-item{display:flex;align-items:center;padding:12px;border-radius:10px;background-color:#f9f9f9;cursor:pointer;transition:all 0.2s;}
 .feature-item:hover{background-color:#e6f0ff;}
 .feature-item .icon{width:40px;height:40px;background-color:#e6f0ff;color:#0083FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-right:12px;}
 .feature-item .text h3{font-size:0.9rem;font-weight:600;color:#333;margin-bottom:3px;}
 .feature-item .text p{font-size:0.75rem;color:#666;}
-
-/* Transaksi */
-.transaction-history{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.transaction-history h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
-.view-all{font-size:0.8rem;color:#0083FF;cursor:pointer;}
 .history-list{max-height:250px;overflow-y:auto;}
 .history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;}
 .history-item:last-child{border-bottom:none;}
@@ -62,33 +47,26 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .history-amount{font-weight:600;}
 .history-amount.in{color:#4caf50;}
 .history-amount.out{color:#f44336;}
-
-/* Bottom nav */
 .bottom-nav{background:white;display:flex;justify-content:space-around;padding:10px 0;box-shadow:0 -2px 10px rgba(0,0,0,0.05);}
 .nav-item{display:flex;flex-direction:column;align-items:center;color:#999;cursor:pointer;transition:color 0.2s;}
 .nav-item.active{color:#0083FF;}
 .nav-item .icon{font-size:1.5rem;}
 .nav-item .label{font-size:0.75rem;margin-top:4px;}
-
-/* Popup */
 .popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;}
 .popup-content{background:white;border-radius:15px;padding:25px;width:90%;max-width:350px;text-align:center;animation:popIn 0.3s ease;}
-@keyframes popIn{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
 .popup-content h3{margin-bottom:15px;}
 .popup-content p{margin-bottom:20px;}
 .popup-content button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:500;}
 .btn-cancel{background:#f0f0f0;color:#333;margin-right:10px;}
-.btn-logout{background:#f44336;color:white;}
 .btn-primary{background:#0083FF;color:white;}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-top">
     <h1>Goopy</h1>
-    <div class="profile-icon" id="profileIcon"><i class="fas fa-user"></i></div>
+    <div class="profile-icon" id="profileIcon"><i class="fas fa-right-from-bracket"></i></div>
   </div>
   <div class="balance-card">
     <p class="balance-label">Saldo Anda</p>
@@ -97,7 +75,6 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
   </div>
 </div>
 
-<!-- Main -->
 <div class="main-content">
   <div class="quick-actions">
     <h2>Menu Cepat</h2>
@@ -109,35 +86,16 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
     </div>
   </div>
 
-  <div class="other-features">
-    <h2>Layanan Lainnya</h2>
-    <div class="feature-grid">
-      <div class="feature-item" onclick="navigateTo('pay.html')"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div><div class="text"><h3>Tagihan</h3><p>Bayar tagihan bulanan</p></div></div>
-      <div class="feature-item" onclick="navigateTo('pulsa.html')"><div class="icon"><i class="fas fa-mobile-alt"></i></div><div class="text"><h3>Pulsa & Data</h3><p>Isi ulang pulsa & paket data</p></div></div>
-      <div class="feature-item" onclick="navigateTo('games.html')"><div class="icon"><i class="fas fa-gamepad"></i></div><div class="text"><h3>Top Up Games</h3><p>Isi diamond game favorit</p></div></div>
-      <div class="feature-item" onclick="navigateTo('donation.html')"><div class="icon"><i class="fas fa-hand-holding-heart"></i></div><div class="text"><h3>Donasi</h3><p>Bantu sesama dengan donasi</p></div></div>
-    </div>
-  </div>
-
   <div class="transaction-history">
     <h2>Transaksi Terakhir <span class="view-all" onclick="navigateTo('history.html')">Lihat Semua</span></h2>
     <div class="history-list" id="historyList"></div>
   </div>
 </div>
 
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div class="nav-item active"><span class="icon"><i class="fas fa-home"></i></span><span class="label">Beranda</span></div>
-  <div class="nav-item" onclick="navigateTo('pay.html')"><span class="icon"><i class="fas fa-wallet"></i></span><span class="label">Bayar</span></div>
-  <div class="nav-item" onclick="navigateTo('inbox.html')"><span class="icon"><i class="fas fa-envelope"></i></span><span class="label">Inbox</span></div>
-  <div class="nav-item" onclick="navigateTo('profile.html')"><span class="icon"><i class="fas fa-user-circle"></i></span><span class="label">Akun</span></div>
-</div>
-
-<!-- Popups -->
 <div class="popup-overlay" id="pinReminderPopup">
   <div class="popup-content">
     <h3>PIN Anda Belum Dibuat</h3>
-    <p>Anda belum membuat PIN untuk transaksi. Yuk buat PIN sekarang!</p>
+    <p>Anda belum membuat PIN transaksi. Yuk buat sekarang!</p>
     <div>
       <button class="btn-cancel" id="laterPinBtn">Nanti</button>
       <button class="btn-primary" id="createPinBtn">Buat PIN</button>
@@ -145,7 +103,6 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -170,7 +127,7 @@ const historyList = document.getElementById('historyList');
 const pinPopup = document.getElementById('pinReminderPopup');
 
 auth.onAuthStateChanged(async user => {
-  if (!user) { window.location.href = "index.html"; return; }
+  if (!user) return (window.location.href = "login.html");
 
   try {
     const docSnap = await db.collection('users').doc(user.uid).get();
@@ -178,7 +135,8 @@ auth.onAuthStateChanged(async user => {
 
     const data = docSnap.data();
     balanceEl.textContent = (data.balance || 0).toLocaleString('id-ID');
-    userInfo.textContent = `Halo, ${data.name || 'Pengguna'}`;
+    userInfo.textContent = `Halo, ${data.name} (@${data.username})`;
+    
     if (!data.pin) pinPopup.style.display = 'flex';
 
     loadTransactions(user.uid);
@@ -209,8 +167,7 @@ function renderTransactions(list){
   }
   list.forEach(t=>{
     const isOut=t.senderId===auth.currentUser.uid;
-    const prefix=isOut?'-':'+';
-    const cls=isOut?'out':'in';
+    const prefix=isOut?'-':'+'; const cls=isOut?'out':'in';
     const icon=isOut?'fa-arrow-up':'fa-arrow-down';
     const name=isOut?(t.recipientName||t.recipientId):(t.senderName||t.senderId);
     const time=new Date(t.timestamp?.seconds*1000||Date.now()).toLocaleString('id-ID');
@@ -225,9 +182,10 @@ function renderTransactions(list){
   });
 }
 
-function navigateTo(p){window.location.href=p;}
 document.getElementById('laterPinBtn').onclick=()=>pinPopup.style.display='none';
 document.getElementById('createPinBtn').onclick=()=>window.location.href='create-pin.html';
+document.getElementById('profileIcon').onclick=()=>{auth.signOut().then(()=>window.location.href='login.html');};
+function navigateTo(p){window.location.href=p;}
 </script>
 </body>
 </html>
