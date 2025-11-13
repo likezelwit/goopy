@@ -139,7 +139,7 @@ function formatPhoneNumber(phone){
   return cleaned;
 }
 
-// 🔹 Signup function (versi fix Auth sinkron)
+// 🔹 Signup function (versi lengkap)
 async function signup(email,password,name,phone,username){
   console.log("🔹 Mulai signup...");
   const userCredential = await GoopyAuth.createUserWithEmailAndPassword(email,password);
@@ -148,13 +148,14 @@ async function signup(email,password,name,phone,username){
 
   await user.updateProfile({ displayName:name });
 
-  // 🔸 Tunggu hingga Auth siap (supaya request.auth.uid == uid)
+  // 🔸 Tunggu Auth siap (sinkron uid)
   await new Promise(resolve=>{
     const unsub = GoopyAuth.onAuthStateChanged(u=>{
       if(u && u.uid === uid){ resolve(); unsub(); }
     });
   });
 
+  // 🔹 Data default pengguna baru (versi lengkap)
   const formattedPhone = formatPhoneNumber(phone);
   const userData = {
     uid,
@@ -164,9 +165,26 @@ async function signup(email,password,name,phone,username){
     phone: formattedPhone,
     pin: "",
     balance: 0,
+    verified: false,
+    deviceInfo: {
+      platform: navigator.platform || "unknown",
+      language: navigator.language || "id-ID",
+      userAgent: navigator.userAgent || "unknown"
+    },
+    settings: {
+      language: "id-ID",
+      notifications: true,
+      darkMode: false
+    },
+    security: {
+      lastFailed: null,
+      loginAttempts: 0,
+      twoFactorEnabled: false
+    },
     transactions: [],
     recentContacts: [],
-    createdAt: new Date()
+    createdAt: new Date(),
+    lastLogin: new Date()
   };
 
   console.log("🟢 Simpan data user ke Firestore:", userData);
