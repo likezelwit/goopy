@@ -32,24 +32,31 @@
   .small a{color:#7b4eff;text-decoration:none;font-weight:500;}
   .small a:hover{text-decoration:underline;}
   #msg{color:#ff4444;margin-top:8px;min-height:20px;}
-  .popup{position:fixed;top:50%;left:50%;
+
+  .popup{
+    position:fixed;top:50%;left:50%;
     transform:translate(-50%,-50%) scale(0.8);
     background:white;color:#333;border-radius:16px;
-    padding:24px 30px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,0.3);
-    opacity:0;transition:0.4s ease;z-index:1000;display:none;}
+    padding:24px 30px;text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,0.3);
+    opacity:0;transition:0.4s ease;z-index:1000;display:none;
+  }
   .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);display:block;}
   .popup.success h3{color:#00a550;}
   .popup.error h3{color:#ff4444;}
   .popup button{margin-top:12px;padding:8px 16px;background:#007bff;
     border:none;color:white;border-radius:8px;cursor:pointer;}
   .popup button:hover{background:#0069e4;}
+
   .input-group{position:relative;margin:8px 0;}
   .input-group .input{padding-left:40px;}
-  .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
-    color:#007bff;font-size:1rem;}
+  .input-icon{
+    position:absolute;left:12px;top:50%;
+    transform:translateY(-50%);color:#007bff;font-size:1rem;
+  }
 </style>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -68,27 +75,40 @@ const GoopyAuth = firebase.auth();
 const GoopyDB = firebase.firestore();
 </script>
 </head>
+
 <body>
 <div class="container">
   <div class="card">
-    <h2>Buat akun Goopy</h2>
+    <h2>Buat Akun Goopy</h2>
     <div class="form">
-      <div class="input-group"><i class="fas fa-user input-icon"></i>
+      
+      <div class="input-group">
+        <i class="fas fa-user input-icon"></i>
         <input id="su_name" class="input" placeholder="Nama lengkap" type="text">
       </div>
-      <div class="input-group"><i class="fas fa-user-tag input-icon"></i>
+
+      <div class="input-group">
+        <i class="fas fa-user-tag input-icon"></i>
         <input id="su_username" class="input" placeholder="Username unik" type="text">
       </div>
-      <div class="input-group"><i class="fas fa-envelope input-icon"></i>
+
+      <div class="input-group">
+        <i class="fas fa-envelope input-icon"></i>
         <input id="su_email" class="input" placeholder="Email" type="email">
       </div>
-      <div class="input-group"><i class="fas fa-phone input-icon"></i>
+
+      <div class="input-group">
+        <i class="fas fa-phone input-icon"></i>
         <input id="su_phone" class="input" placeholder="Nomor Telepon" type="tel">
       </div>
-      <div class="input-group"><i class="fas fa-lock input-icon"></i>
+
+      <div class="input-group">
+        <i class="fas fa-lock input-icon"></i>
         <input id="su_password" class="input" placeholder="Password (min 6)" type="password">
       </div>
+
       <button id="btnSignup" class="btn">Daftar</button>
+
       <div class="small">Sudah punya akun? <a href="./login.html">Masuk</a></div>
       <div id="msg" class="small"></div>
     </div>
@@ -97,63 +117,61 @@ const GoopyDB = firebase.firestore();
 
 <!-- Popup -->
 <div id="popup" class="popup">
-  <h3></h3><p></p>
+  <h3></h3>
+  <p></p>
   <button id="popupBtn">Oke</button>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <script>
-// AUTO REDIRECT
-GoopyAuth.onAuthStateChanged(user => { 
-  if(user) window.location.href="./home.html"; 
+// Redirect jika sudah login
+GoopyAuth.onAuthStateChanged(user => {
+  if (user) location.href = "./home.html";
 });
 
-// POPUP SYSTEM
-function showPopup(title,message,type){
-  const popup = document.getElementById("popup");
-  popup.querySelector("h3").textContent = title;
-  popup.querySelector("p").textContent = message;
-  popup.className = "popup " + type + " show";
-  popup.style.display = "block";
+// Popup
+function showPopup(title, msg, type) {
+  const pop = document.getElementById("popup");
+  pop.querySelector("h3").textContent = title;
+  pop.querySelector("p").textContent = msg;
+  pop.className = "popup " + type + " show";
+  pop.style.display = "block";
 }
-document.getElementById("popupBtn").onclick = ()=>{
+document.getElementById("popupBtn").onclick = () =>
   document.getElementById("popup").classList.remove("show");
-};
 
-// VALIDATE PHONE
-function validatePhoneNumber(phone){
-  if(!phone) return false;
-  const digits = phone.replace(/\D/g,'');
+// Validate phone
+function validatePhone(phone) {
+  const digits = phone.replace(/\D/g, "");
   return digits.length >= 6 && digits.length <= 15;
 }
-function formatPhoneNumber(phone){
-  if(!phone) return "";
-  let p = phone.replace(/\D/g,'');
-  if(p.startsWith("0")) p = "+62" + p.substring(1);
-  if(!p.startsWith("+")) p = "+" + p;
+function formatPhone(phone) {
+  let p = phone.replace(/\D/g, "");
+  if (p.startsWith("0")) p = "+62" + p.substring(1);
+  if (!p.startsWith("+")) p = "+" + p;
   return p;
 }
 
-// SIGNUP
-async function signup(email,password,name,phone,username){
-  console.log("▶ Melakukan signup...");
-
-  const cred = await GoopyAuth.createUserWithEmailAndPassword(email,password);
+// SIGNUP MAIN FUNCTION
+async function signup(email, pw, name, phone, username) {
+  const cred = await GoopyAuth.createUserWithEmailAndPassword(email, pw);
   const user = cred.user;
   const uid = user.uid;
 
-  await user.updateProfile({ displayName:name });
+  await user.updateProfile({ displayName: name });
 
-  const formattedPhone = formatPhoneNumber(phone);
   const now = firebase.firestore.Timestamp.now();
 
-  const userData = {
+  await GoopyDB.collection("users").doc(uid).set({
     uid,
     name,
     username,
     email,
-    phone: formattedPhone,
+    phone: formatPhone(phone),
+
+    // Default fields (biar rules tidak error)
     pin: "",
     balance: 0,
     verified: false,
@@ -161,54 +179,60 @@ async function signup(email,password,name,phone,username){
     lastLogin: now,
     recentContacts: [],
     transactions: [],
-    security: { twoFactor:false, loginAttempts:0, lastFailed:null },
-    settings: { theme:"light", language:"id", notifications:true },
+
+    security: {
+      twoFactor: false,
+      loginAttempts: 0,
+      lastFailed: null
+    },
+
+    settings: {
+      theme: "light",
+      language: "id",
+      notifications: true
+    },
+
     deviceInfo: {
       userAgent: navigator.userAgent,
       platform: navigator.platform,
       language: navigator.language,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }
-  };
+  });
 
-  await GoopyDB.collection("users").doc(uid).set(userData);
   return user;
 }
 
-// BUTTON SIGNUP
-document.getElementById("btnSignup").onclick = async ()=>{
-  const n = su_name.value.trim();
-  const u = su_username.value.trim();
-  const e = su_email.value.trim();
-  const p = su_phone.value.trim();
+// BUTTON ACTION
+document.getElementById("btnSignup").onclick = async () => {
+  const name = su_name.value.trim();
+  const username = su_username.value.trim();
+  const email = su_email.value.trim();
+  const phone = su_phone.value.trim();
   const pw = su_password.value.trim();
 
-  if(!n || !u || !e || !p || !pw){
-    showPopup("⚠️ Lengkapi semua","Semua field wajib diisi.","error");
-    return;
-  }
-  if(pw.length < 6){
-    showPopup("⚠️ Password lemah","Minimal 6 karakter.","error");
-    return;
-  }
-  if(!validatePhoneNumber(p)){
-    showPopup("⚠️ Nomor tidak valid","Cek kembali nomor kamu.","error");
-    return;
-  }
+  if (!name || !username || !email || !phone || !pw)
+    return showPopup("⚠️ Lengkapi Semua", "Semua field wajib diisi.", "error");
 
-  try{
-    await signup(e,pw,n,p,u);
-    showPopup("🎉 Berhasil","Akun kamu berhasil dibuat!","success");
-    setTimeout(()=>location.href="./home.html",1200);
-  }catch(err){
+  if (pw.length < 6)
+    return showPopup("⚠️ Password lemah", "Minimal 6 karakter.", "error");
+
+  if (!validatePhone(phone))
+    return showPopup("⚠️ Nomor tidak valid", "Cek kembali nomor telepon.", "error");
+
+  try {
+    await signup(email, pw, name, phone, username);
+    showPopup("🎉 Berhasil!", "Akun kamu berhasil dibuat!", "success");
+    setTimeout(() => (location.href = "./home.html"), 1200);
+  } catch (err) {
     console.error(err);
-    if(err.code === "auth/email-already-in-use")
-      showPopup("❌ Email dipakai","Gunakan email lain.","error");
-    else if(err.code === "auth/weak-password")
-      showPopup("❌ Password lemah","Minimal 6 karakter.","error");
-    else if(err.code === "permission-denied")
-      showPopup("❌ Ditolak rules","Cek rules Firestore kamu.","error");
-    else showPopup("❌ Gagal",err.message,"error");
+
+    if (err.code === "auth/email-already-in-use")
+      showPopup("❌ Email dipakai", "Gunakan email lain.", "error");
+    else if (err.code === "permission-denied")
+      showPopup("❌ Ditolak rules", "Periksa rules Firestore kamu.", "error");
+    else
+      showPopup("❌ Gagal", err.message, "error");
   }
 };
 </script>
