@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Goopy — Kirim Uang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,10 +10,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
-body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+body{background:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
 .header{background:linear-gradient(135deg,#0083FF,#00C2FF);color:white;padding:20px;padding-top:40px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
 .header-top{display:flex;align-items:center;margin-bottom:20px;}
-.back-btn{width:35px;height:35px;border-radius:50%;background-color:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;margin-right:15px;}
+.back-btn{width:35px;height:35px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;margin-right:15px;}
 .header h1{font-size:1.2rem;font-weight:600;}
 .balance-card{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:15px;padding:20px;text-align:center;margin-bottom:10px;}
 .balance-label{font-size:.9rem;opacity:.9;}
@@ -70,7 +70,7 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
     <h2>Detail Transfer</h2>
     <div class="form-group">
       <label for="recipient">Cari Penerima</label>
-      <input type="text" id="recipient" placeholder="Nama, Email, Username, atau No. HP">
+      <input type="text" id="recipient" placeholder="Nama, Email, Username, No. HP">
       <div id="searchStatus" class="search-status"></div>
       <div id="recipientResults" class="recipient-results"></div>
     </div>
@@ -81,7 +81,7 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
         <div class="amount-option" data-amount="25000">Rp 25.000</div>
         <div class="amount-option" data-amount="50000">Rp 50.000</div>
       </div>
-      <input type="number" id="amount" placeholder="Masukkan jumlah lainnya">
+      <input type="number" id="amount" placeholder="Jumlah lainnya">
     </div>
     <div class="form-group">
       <label for="note">Catatan (Opsional)</label>
@@ -130,12 +130,12 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
-  authDomain: "goopy-1a485.firebaseapp.com",
-  projectId: "goopy-1a485",
-  storageBucket: "goopy-1a485.firebasestorage.app",
-  messagingSenderId: "478710064427",
-  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
+  apiKey: "API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID",
+  storageBucket: "PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -143,7 +143,7 @@ const db = firebase.firestore();
 
 let currentUser=null, userBalance=0, selectedAmount=0, recipientData=null, pinValue="", hasPin=false;
 
-// ===== Auth & Load User =====
+// LOAD USER
 auth.onAuthStateChanged(async user=>{
   if(!user) return location.href="./index.html";
   currentUser=user;
@@ -152,8 +152,8 @@ auth.onAuthStateChanged(async user=>{
   if(!snap.exists){
     await ref.set({
       name:user.displayName||"Pengguna Baru",
-      email:user.email,
-      username:user.email?user.email.split('@')[0]:null,
+      email:user.email||"",
+      username:user.email?user.email.split('@')[0]:"user",
       balance:0,
       pin:"",
       createdAt:new Date(),
@@ -168,13 +168,13 @@ auth.onAuthStateChanged(async user=>{
       phone:""
     });
   }
-  const data=(snap.data()||{});
+  const data=(await ref.get()).data();
   userBalance=data.balance||0;
   hasPin=!!data.pin;
   document.querySelector("#balanceAmount span").textContent=userBalance.toLocaleString("id-ID");
 });
 
-// ===== SEARCH PENERIMA =====
+// SEARCH USER
 const recipientInput=document.getElementById("recipient");
 const resultsDiv=document.getElementById("recipientResults");
 const statusDiv=document.getElementById("searchStatus");
@@ -216,13 +216,14 @@ resultsDiv.addEventListener("click",e=>{
   checkReady();
 });
 
-// ===== AMOUNT SELECTION =====
+// AMOUNT
 document.querySelectorAll(".amount-option").forEach(opt=>{
   opt.onclick=()=>{
     document.querySelectorAll(".amount-option").forEach(o=>o.classList.remove("selected"));
     opt.classList.add("selected");
     selectedAmount=parseInt(opt.dataset.amount);
-    document.getElementById("amount").value="";checkReady();
+    document.getElementById("amount").value="";
+    checkReady();
   };
 });
 document.getElementById("amount").oninput=e=>{
@@ -231,35 +232,31 @@ document.getElementById("amount").oninput=e=>{
   checkReady();
 };
 function checkReady(){
-  document.getElementById("transferBtn").disabled=!(recipientData&&selectedAmount>0&&selectedAmount<=userBalance);
+  document.getElementById("transferBtn").disabled=!(recipientData && selectedAmount>0 && selectedAmount<=userBalance);
 }
 
-// ===== TRANSFER =====
-document.getElementById("transferBtn").onclick=async()=>{
+// TRANSFER BUTTON
+document.getElementById("transferBtn").onclick=()=>{
   if(!recipientData||selectedAmount<=0)return alert("Pilih penerima dan jumlah.");
   if(hasPin){
     document.getElementById("mainContent").style.display="none";
     document.getElementById("pinPage").style.display="flex";
     pinValue="";updatePinDisplay();
-  }else{
-    await processTransfer();
-  }
+  }else processTransfer();
 };
 
-// ===== PIN HANDLING =====
-function pressPin(n){if(pinValue.length>=6)return;pinValue+=n.toString();updatePinDisplay();}
+// PIN
+function pressPin(n){if(pinValue.length>=6)return;pinValue+=n;updatePinDisplay();}
 function deletePin(){pinValue=pinValue.slice(0,-1);updatePinDisplay();}
-function updatePinDisplay(){document.querySelectorAll(".pin-dot").forEach((d,i)=>{d.classList.toggle("active",i<pinValue.length);});}
-function submitPin(){verifyPin();}
-async function verifyPin(){
+function updatePinDisplay(){document.querySelectorAll(".pin-dot").forEach((d,i)=>d.classList.toggle("active",i<pinValue.length));}
+async function submitPin(){
   const userDoc=await db.collection("users").doc(currentUser.uid).get();
-  const userData=userDoc.data();
-  if(userData.pin!==pinValue){document.getElementById("pinErrorFull").textContent="PIN salah.";pinValue="";updatePinDisplay();return;}
+  if(userDoc.data().pin!==pinValue){document.getElementById("pinErrorFull").textContent="PIN salah.";pinValue="";updatePinDisplay();return;}
   document.getElementById("pinPage").style.display="none";
-  await processTransfer();
+  processTransfer();
 }
 
-// ===== PROCESS TRANSFER =====
+// PROCESS TRANSFER
 async function processTransfer(){
   document.getElementById("loadingOverlay").style.display="flex";
   try{
@@ -268,14 +265,15 @@ async function processTransfer(){
     const now=new Date();
 
     await db.runTransaction(async t=>{
-      const s=await t.get(db.collection("users").doc(currentUser.uid));
-      const r=await t.get(db.collection("users").doc(recipientData.id));
+      const senderRef=db.collection("users").doc(currentUser.uid);
+      const recipientRef=db.collection("users").doc(recipientData.id);
+      const s=await t.get(senderRef);
+      const r=await t.get(recipientRef);
       if(!s.exists||!r.exists)throw new Error("User tidak ditemukan.");
       const sb=s.data().balance||0, rb=r.data().balance||0;
       if(sb<selectedAmount)throw new Error("Saldo tidak cukup.");
 
-      const senderTransactions=s.data().transactions||[];
-      senderTransactions.push({
+      const senderTx=[...(s.data().transactions||[]),{
         type:"out",
         amount:selectedAmount,
         recipientId:recipientData.id,
@@ -283,15 +281,10 @@ async function processTransfer(){
         note:noteVal,
         code,
         date:now.toISOString()
-      });
+      }];
+      t.update(senderRef,{balance:sb-selectedAmount,transactions:senderTx});
 
-      t.update(db.collection("users").doc(currentUser.uid),{
-        balance:sb-selectedAmount,
-        transactions:senderTransactions
-      });
-
-      const recipientTransactions=r.data().transactions||[];
-      recipientTransactions.push({
+      const recipientTx=[...(r.data().transactions||[]),{
         type:"in",
         amount:selectedAmount,
         senderId:currentUser.uid,
@@ -299,16 +292,12 @@ async function processTransfer(){
         note:noteVal,
         code,
         date:now.toISOString()
-      });
-
-      t.update(db.collection("users").doc(recipientData.id),{
-        balance:rb+selectedAmount,
-        transactions:recipientTransactions
-      });
+      }];
+      t.update(recipientRef,{balance:rb+selectedAmount,transactions:recipientTx});
 
       t.set(db.collection("transactions").doc(),{
         senderId:currentUser.uid,
-        senderName: currentUser.displayName||currentUser.email,
+        senderName:currentUser.displayName||currentUser.email,
         recipientId:recipientData.id,
         recipientName:recipientData.name,
         amount:selectedAmount,
@@ -328,24 +317,23 @@ async function processTransfer(){
       <b>Ke:</b> ${recipientData.name}<br>
       <b>Jumlah:</b> Rp ${selectedAmount.toLocaleString("id-ID")}<br>
       <b>Catatan:</b> ${noteVal}<br>
-      <b>Tanggal & Waktu:</b> ${data.date}`;
-
-    document.getElementById("qrCode").innerHTML="";
-    new QRCode(document.getElementById("qrCode"),{text:JSON.stringify(data),width:150,height:150});
+      <b>Tanggal:</b> ${now.toLocaleString("id-ID")}
+    `;
+    new QRCode(document.getElementById("qrCode"),code);
 
     document.getElementById("successPage").style.display="flex";
   }catch(e){alert(e.message);}
-  document.getElementById("loadingOverlay").style.display="none";
+  finally{document.getElementById("loadingOverlay").style.display="none";}
 }
 
+// BACK & SUCCESS
+function goBack(){window.history.back();}
 function closeSuccess(){
   document.getElementById("successPage").style.display="none";
   document.getElementById("mainContent").style.display="flex";
-  recipientInput.value="";selectedAmount=0;recipientData=null;
-  document.getElementById("amount").value="";document.getElementById("note").value="";
-  checkReady();
+  recipientData=null;document.getElementById("recipient").value="";selectedAmount=0;document.getElementById("amount").value="";
+  document.querySelectorAll(".amount-option").forEach(o=>o.classList.remove("selected"));checkReady();
 }
-function goBack(){history.back();}
 </script>
 </body>
 </html>
