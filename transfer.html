@@ -274,12 +274,9 @@ async function processTransfer(){
       const sb=s.data().balance||0, rb=r.data().balance||0;
       if(sb<selectedAmount)throw new Error("Saldo tidak cukup.");
 
-      // Tambahkan transaksi baru di array sender
+      // Array senderTransactions hanya menyimpan code
       const senderTransactions=s.data().transactions||[];
-      senderTransactions.push({
-        code,recipientId:recipientData.id,recipientName:recipientData.name,
-        amount:selectedAmount,note:noteVal,timestamp:firebase.firestore.FieldValue.serverTimestamp()
-      });
+      senderTransactions.push(code);
 
       t.update(db.collection("users").doc(currentUser.uid),{
         balance:sb-selectedAmount,
@@ -290,6 +287,7 @@ async function processTransfer(){
         balance:rb+selectedAmount
       });
 
+      // Transaksi lengkap tetap di collection transactions
       t.set(db.collection("transactions").doc(),{
         senderId:currentUser.uid,
         senderName: currentUser.displayName||currentUser.email,
