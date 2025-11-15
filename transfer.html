@@ -129,21 +129,23 @@ body{background:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+// ==== FIREBASE CONFIG ====
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
+  authDomain: "goopy-1a485.firebaseapp.com",
+  projectId: "goopy-1a485",
+  storageBucket: "goopy-1a485.firebasestorage.app",
+  messagingSenderId: "478710064427",
+  appId: "1:478710064427:web:a3b0c455c91f2c12db916e"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// ==== VARIABLES ====
 let currentUser=null, userBalance=0, selectedAmount=0, recipientData=null, pinValue="", hasPin=false;
 
-// LOAD USER
+// ==== LOAD USER ====
 auth.onAuthStateChanged(async user=>{
   if(!user) return location.href="./index.html";
   currentUser=user;
@@ -174,7 +176,7 @@ auth.onAuthStateChanged(async user=>{
   document.querySelector("#balanceAmount span").textContent=userBalance.toLocaleString("id-ID");
 });
 
-// SEARCH USER
+// ==== SEARCH USER ====
 const recipientInput=document.getElementById("recipient");
 const resultsDiv=document.getElementById("recipientResults");
 const statusDiv=document.getElementById("searchStatus");
@@ -216,7 +218,7 @@ resultsDiv.addEventListener("click",e=>{
   checkReady();
 });
 
-// AMOUNT
+// ==== AMOUNT ====
 document.querySelectorAll(".amount-option").forEach(opt=>{
   opt.onclick=()=>{
     document.querySelectorAll(".amount-option").forEach(o=>o.classList.remove("selected"));
@@ -235,7 +237,7 @@ function checkReady(){
   document.getElementById("transferBtn").disabled=!(recipientData && selectedAmount>0 && selectedAmount<=userBalance);
 }
 
-// TRANSFER BUTTON
+// ==== TRANSFER BUTTON ====
 document.getElementById("transferBtn").onclick=()=>{
   if(!recipientData||selectedAmount<=0)return alert("Pilih penerima dan jumlah.");
   if(hasPin){
@@ -245,7 +247,7 @@ document.getElementById("transferBtn").onclick=()=>{
   }else processTransfer();
 };
 
-// PIN
+// ==== PIN ====
 function pressPin(n){if(pinValue.length>=6)return;pinValue+=n;updatePinDisplay();}
 function deletePin(){pinValue=pinValue.slice(0,-1);updatePinDisplay();}
 function updatePinDisplay(){document.querySelectorAll(".pin-dot").forEach((d,i)=>d.classList.toggle("active",i<pinValue.length));}
@@ -256,7 +258,7 @@ async function submitPin(){
   processTransfer();
 }
 
-// PROCESS TRANSFER
+// ==== PROCESS TRANSFER ====
 async function processTransfer(){
   document.getElementById("loadingOverlay").style.display="flex";
   try{
@@ -310,7 +312,6 @@ async function processTransfer(){
     userBalance-=selectedAmount;
     document.querySelector("#balanceAmount span").textContent=userBalance.toLocaleString("id-ID");
 
-    const data={amount:selectedAmount,recipientName:recipientData.name,note:noteVal,date:now.toLocaleString("id-ID"),code};
     document.getElementById("transactionDetailFull").innerHTML=`
       <b>ID Transaksi:</b> ${code}<br>
       <b>Dari:</b> ${currentUser.displayName||currentUser.email}<br>
@@ -326,7 +327,7 @@ async function processTransfer(){
   finally{document.getElementById("loadingOverlay").style.display="none";}
 }
 
-// BACK & SUCCESS
+// ==== BACK & SUCCESS ====
 function goBack(){window.history.back();}
 function closeSuccess(){
   document.getElementById("successPage").style.display="none";
