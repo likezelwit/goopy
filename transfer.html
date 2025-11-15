@@ -128,7 +128,7 @@ body{background:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-// ==== FIREBASE CONFIG ====
+// ===== FIREBASE CONFIG =====
 const firebaseConfig = {
   apiKey: "AIzaSyAgx2eZh68OK9RKi5ilKkN7FCYPAC4fqEA",
   authDomain: "goopy-1a485.firebaseapp.com",
@@ -141,10 +141,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ==== VARIABLES ====
+// ===== VARIABLES =====
 let currentUser=null, userBalance=0, selectedAmount=0, recipientData=null, pinValue="", hasPin=false;
 
-// ==== LOAD USER ====
+// ===== LOAD USER =====
 auth.onAuthStateChanged(async user=>{
   if(!user) return location.href="./index.html";
   currentUser=user;
@@ -156,16 +156,12 @@ auth.onAuthStateChanged(async user=>{
       email:user.email||"",
       username:user.email?user.email.split('@')[0]:"user",
       balance:0,
-      pin:"",
+      pin:"123456",
       createdAt:new Date(),
       transactions:[],
       recentContacts:[],
       verified:false,
       lastLogin:new Date(),
-      security:{},
-      settings:{},
-      deviceInfo:{},
-      meta:{},
       phone:""
     });
   }
@@ -175,31 +171,152 @@ auth.onAuthStateChanged(async user=>{
   document.querySelector("#balanceAmount span").textContent=userBalance.toLocaleString("id-ID");
 });
 
-// ==== SEARCH USER ====
+// ===== SEARCH USER =====
 const recipientInput=document.getElementById("recipient");
 const resultsDiv=document.getElementById("recipientResults");
 const statusDiv=document.getElementById("searchStatus");
 let searchTimeout;
-recipientInput.addEventListener("input",()=>{ ... });
 
-// ==== AMOUNT ====
-// sama seperti sebelumnya
+recipientInput.addEventListener("input",()=>{
+  clearTimeout(searchTimeout);
+  const q = recipientInput.value.trim().toLowerCase();
+  resultsDiv.innerHTML=""; resultsDiv.style.display="none"; recipientData=null;
+  document.getElementById("transferBtn").disabled=true;
+  if(!q) return;
+  searchTimeout = setTimeout(async()=>{
+    statusDiv.textContent="Mencari pengguna...";
+    try{
+      const usersSnap = await db.collection("users").get();
+      const matches=[];
+      usersSnap.forEach(doc=>{
+        const d=doc.data();
+        const all=(d.name+" "+d.username+" "+d.email+" "+(d.phone||"")).toLowerCase();
+        if(all.includes(q) && doc.id !== currentUser.uid) matches.push({id:doc.id,...d});
+      });
+      if(matches.length){
+        resultsDiv.style.display="flex";
+        resultsDiv.innerHTML = matches.map(u=>`
+          <div class="recipient-item" data-id="${u.id}" data-name="${u.name}">
+            <div class="recipient-avatar"><i class="fas fa-user"></i></div>
+            <div><div><b>${u.name||"Tanpa Nama"}</b></div>
+            <div style="font-size:.85rem;color:#555">${u.phone||"(Nomor tidak tersedia)"}</div></div>
+          </div>`).join("");
+        statusDiv.textContent="";
+      } else {
+        resultsDiv.style.display="none";
+        statusDiv.textContent="Tidak ada pengguna mirip '"+q+"'";
+      }
+    } catch(e){
+      statusDiv.textContent="Gagal mencari pengguna.";
+    }
+  },500);
+});
 
-// ==== TRANSFER BUTTON ====
-document.getElementById("transferBtn").onclick=()=>{ ... };
+resultsDiv.addEventListener("click", e=>{
+  const item = e.target.closest(".recipient-item");
+  if(!item) return;
+  recipientData={id:item.dataset.id, name:item.dataset.name};
+  recipientInput.value = recipientData.name;
+  resultsDiv.style.display="none";
+  checkReady();
+});
 
-// ==== PIN ====
-function pressPin(n){ ... }
-function deletePin(){ ... }
-function updatePinDisplay(){ ... }
-async function submitPin(){ ... }
+// ===== AMOUNT =====
+const amountOptions = document.querySelectorAll(".amount-option");
+const amountInput = document.getElementById("amount");
 
-// ==== PROCESS TRANSFER ====
-async function processTransfer(){ ... }
+amountOptions.forEach(opt=>{
+  opt.addEventListener("click", ()=>{
+    amountOptions.forEach(o=>o.classList.remove("selected"));
+    opt.classList.add("selected");
+    selectedAmount = parseInt(opt.dataset.amount);
+    amountInput.value = selectedAmount;
+    checkReady();
+  });
+});
 
-// ==== BACK & SUCCESS ====
+amountInput.addEventListener("input", ()=>{
+  selectedAmount = parseInt(amountInput.value)||0;
+  amountOptions.forEach(o=>o.classList.remove("selected"));
+  checkReady();
+});
+
+function checkReady(){
+  document.getElementById("transferBtn").disabled = !(recipientData && selectedAmount>0);
+}
+
+// ===== TRANSFER BUTTON =====
+document.getElementById("transferBtn").addEventListener("click", ()=>{
+  if(!hasPin){
+    alert("Silakan buat PIN terlebih dahulu di pengaturan.");
+    return;
+  }
+  document.getElementById("pinPage").style.display="flex";
+  pinValue="";
+  updatePinDisplay();
+});
+
+// ===== PIN INPUT =====
+function pressPin(n){ if(pinValue.length<6){ pinValue+=n; updatePinDisplay(); } }
+function deletePin(){ pinValue = pinValue.slice(0,-1); updatePinDisplay(); }
+function updatePinDisplay(){
+  const dots = document.querySelectorAll(".pin-dot");
+  dots.forEach((d,i)=>d.classList.toggle("active", i<pinValue.length));
+}
+async function submitPin(){
+  const ref=db.collection("users").doc(currentUser.uid);
+  const data=(await ref.get()).data();
+  if(pinValue===data.pin){
+    document.getElementById("pinPage").style.display="none";
+    processTransfer();
+  } else{
+    document.getElementById("pinErrorFull").textContent="PIN salah!";
+    pinValue="";
+    updatePinDisplay();
+  }
+}
+
+// ===== PROCESS TRANSFER =====
+async function processTransfer(){
+  document.getElementById("loadingOverlay").style.display="flex";
+  try{
+    // Kurangi saldo pengirim
+    userBalance -= selectedAmount;
+    await db.collection("users").doc(currentUser.uid).update({balance:userBalance});
+
+    // Tambahkan transaksi ke pengirim
+    await db.collection("users").doc(currentUser.uid).collection("transactions").add({
+      to:recipientData,
+      amount:selectedAmount,
+      note:document.getElementById("note").value,
+      createdAt:new Date()
+    });
+
+    document.querySelector("#balanceAmount span").textContent=userBalance.toLocaleString("id-ID");
+
+    // Tampilkan halaman sukses
+    document.getElementById("transactionDetailFull").innerHTML=
+      `<b>Penerima:</b> ${recipientData.name}<br>
+      <b>Jumlah:</b> Rp ${selectedAmount.toLocaleString("id-ID")}<br>
+      <b>Catatan:</b> ${document.getElementById("note").value||"-"}`;
+
+    new QRCode(document.getElementById("qrCode"), {
+      text: `Transfer ${selectedAmount} ke ${recipientData.name}`,
+      width:150,
+      height:150
+    });
+
+    document.getElementById("successPage").style.display="flex";
+  } catch(e){
+    alert("Terjadi kesalahan transfer.");
+  } finally{
+    document.getElementById("loadingOverlay").style.display="none";
+  }
+}
+
+// ===== BACK & SUCCESS =====
 function goBack(){ window.history.back(); }
-function closeSuccess(){ ... }
+function closeSuccess(){ document.getElementById("successPage").style.display="none"; }
 </script>
 </body>
 </html>
