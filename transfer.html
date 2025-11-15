@@ -274,20 +274,40 @@ async function processTransfer(){
       const sb=s.data().balance||0, rb=r.data().balance||0;
       if(sb<selectedAmount)throw new Error("Saldo tidak cukup.");
 
-      // Array senderTransactions hanya menyimpan code
+      // Array senderTransactions menyimpan object
       const senderTransactions=s.data().transactions||[];
-      senderTransactions.push(code);
+      senderTransactions.push({
+        type:"out",
+        amount:selectedAmount,
+        recipientId:recipientData.id,
+        recipientName:recipientData.name,
+        note:noteVal,
+        code,
+        date:now.toISOString()
+      });
 
       t.update(db.collection("users").doc(currentUser.uid),{
         balance:sb-selectedAmount,
         transactions:senderTransactions
       });
 
-      t.update(db.collection("users").doc(recipientData.id),{
-        balance:rb+selectedAmount
+      const recipientTransactions=r.data().transactions||[];
+      recipientTransactions.push({
+        type:"in",
+        amount:selectedAmount,
+        senderId:currentUser.uid,
+        senderName:currentUser.displayName||currentUser.email,
+        note:noteVal,
+        code,
+        date:now.toISOString()
       });
 
-      // Transaksi lengkap tetap di collection transactions
+      t.update(db.collection("users").doc(recipientData.id),{
+        balance:rb+selectedAmount,
+        transactions:recipientTransactions
+      });
+
+      // Transaksi lengkap di collection transactions
       t.set(db.collection("transactions").doc(),{
         senderId:currentUser.uid,
         senderName: currentUser.displayName||currentUser.email,
