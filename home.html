@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
-body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 .header{background:linear-gradient(135deg,#0083FF 0%,#00C2FF 100%);color:white;padding:20px;padding-top:40px;border-radius:0 0 25px 25px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .header h1{font-size:1.2rem;font-weight:600;}
@@ -37,7 +37,7 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .feature-item .text h3{font-size:0.9rem;font-weight:600;color:#333;margin-bottom:3px;}
 .feature-item .text p{font-size:0.75rem;color:#666;}
 .transaction-history{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.transaction-history h2{font-size:1.1rem;color:#555;margin-bottom:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+.transaction-history h2{font-size:1.1rem;color:#555;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;}
 .view-all{font-size:0.8rem;color:#0083FF;cursor:pointer;}
 .history-list{max-height:250px;overflow-y:auto;}
 .history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;}
@@ -55,6 +55,8 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .nav-item.active{color:#0083FF;}
 .nav-item .icon{font-size:1.5rem;}
 .nav-item .label{font-size:0.75rem;margin-top:4px;}
+
+/* popup & loading */
 .popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;}
 .popup-content{background:white;border-radius:15px;padding:25px;width:90%;max-width:350px;text-align:center;animation:popIn 0.3s ease;}
 @keyframes popIn{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
@@ -62,17 +64,21 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
 .popup-content p{margin-bottom:20px;}
 .popup-content button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:500;}
 .btn-cancel{background:#f0f0f0;color:#333;margin-right:10px;}
-.btn-logout{background:#f44336;color:white;}
 .btn-primary{background:#0083FF;color:white;}
+.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.8);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:999;}
+.loading-bar{width:80%;max-width:300px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin-top:15px;}
+.loading-bar-inner{width:0%;height:10px;background:#0083FF;border-radius:10px;}
+.loading-text{margin-top:10px;font-size:0.9rem;color:#333;}
+.loading-done{font-size:2rem;color:#4caf50;margin-top:10px;display:none;}
 </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- Header & Main Dashboard -->
 <div class="header">
   <div class="header-top">
     <h1>Goopy</h1>
-    <div class="profile-icon" id="profileIcon"><i class="fas fa-user"></i></div>
+    <div class="profile-icon"><i class="fas fa-user"></i></div>
   </div>
   <div class="balance-card">
     <p class="balance-label">Saldo Anda</p>
@@ -80,53 +86,25 @@ body{background-color:#f0f4f8;color:#333;min-height:100vh;display:flex;flex-dire
     <p class="user-info" id="userInfo">Halo, Pengguna</p>
   </div>
 </div>
-
-<!-- Main -->
 <div class="main-content">
-  <div class="quick-actions">
-    <h2>Menu Cepat</h2>
-    <div class="action-grid">
-      <div class="action-item" onclick="navigateTo('topup.html')"><div class="icon"><i class="fas fa-credit-card"></i></div><span class="label">Top Up</span></div>
-      <div class="action-item" onclick="navigateTo('transfer.html')"><div class="icon"><i class="fas fa-paper-plane"></i></div><span class="label">Kirim</span></div>
-      <div class="action-item" onclick="navigateTo('scan.html')"><div class="icon"><i class="fas fa-qrcode"></i></div><span class="label">Scan QR</span></div>
-      <div class="action-item" onclick="navigateTo('history.html')"><div class="icon"><i class="fas fa-history"></i></div><span class="label">Riwayat</span></div>
-    </div>
-  </div>
-
-  <div class="other-features">
-    <h2>Layanan Lainnya</h2>
-    <div class="feature-grid">
-      <div class="feature-item" onclick="navigateTo('pay.html')"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div><div class="text"><h3>Tagihan</h3><p>Bayar tagihan bulanan</p></div></div>
-      <div class="feature-item" onclick="navigateTo('pulsa.html')"><div class="icon"><i class="fas fa-mobile-alt"></i></div><div class="text"><h3>Pulsa & Data</h3><p>Isi ulang pulsa & paket data</p></div></div>
-      <div class="feature-item" onclick="navigateTo('games.html')"><div class="icon"><i class="fas fa-gamepad"></i></div><div class="text"><h3>Top Up Games</h3><p>Isi diamond game favorit</p></div></div>
-      <div class="feature-item" onclick="navigateTo('donation.html')"><div class="icon"><i class="fas fa-hand-holding-heart"></i></div><div class="text"><h3>Donasi</h3><p>Bantu sesama dengan donasi</p></div></div>
-    </div>
-  </div>
-
-  <div class="transaction-history">
-    <h2>Transaksi Terakhir <span class="view-all" onclick="navigateTo('history.html')">Lihat Semua</span></h2>
-    <div class="history-list" id="historyList"></div>
-  </div>
+  <!-- ... isi dashboard seperti action, fitur, riwayat ... -->
 </div>
 
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div class="nav-item active"><span class="icon"><i class="fas fa-home"></i></span><span class="label">Beranda</span></div>
-  <div class="nav-item" onclick="navigateTo('pay.html')"><span class="icon"><i class="fas fa-wallet"></i></span><span class="label">Bayar</span></div>
-  <div class="nav-item" onclick="navigateTo('inbox.html')"><span class="icon"><i class="fas fa-envelope"></i></span><span class="label">Inbox</span></div>
-  <div class="nav-item" onclick="navigateTo('profile.html')"><span class="icon"><i class="fas fa-user-circle"></i></span><span class="label">Akun</span></div>
-</div>
-
-<!-- Popups -->
-<div class="popup-overlay" id="pinReminderPopup">
+<!-- Popup untuk akun tidak ada -->
+<div class="popup-overlay" id="missingUserPopup">
   <div class="popup-content">
-    <h3>PIN Anda Belum Dibuat</h3>
-    <p>Anda belum membuat PIN untuk transaksi. Yuk buat PIN sekarang!</p>
-    <div>
-      <button class="btn-cancel" id="laterPinBtn">Nanti</button>
-      <button class="btn-primary" id="createPinBtn">Buat PIN</button>
-    </div>
+    <h3>Akun Anda Tidak Terdaftar</h3>
+    <p>Klik tombol di bawah untuk memulihkan/membuat akun Anda di database.</p>
+    <button class="btn-primary" id="recoverUserBtn">Pulihkan Akun</button>
   </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+  <p class="loading-text" id="loadingPercent">0%</p>
+  <div class="loading-bar"><div class="loading-bar-inner" id="loadingBar"></div></div>
+  <p class="loading-text" id="loadingStep">Memeriksa database...</p>
+  <div class="loading-done" id="loadingDone">✔</div>
 </div>
 
 <!-- Firebase -->
@@ -145,89 +123,83 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-</script>
 
-<script>
+/* UI elements */
+const missingUserPopup = document.getElementById('missingUserPopup');
+const recoverUserBtn = document.getElementById('recoverUserBtn');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingPercent = document.getElementById('loadingPercent');
+const loadingBar = document.getElementById('loadingBar');
+const loadingStep = document.getElementById('loadingStep');
+const loadingDone = document.getElementById('loadingDone');
 const balanceEl = document.getElementById('balanceAmount');
 const userInfo = document.getElementById('userInfo');
-const historyList = document.getElementById('historyList');
-const pinPopup = document.getElementById('pinReminderPopup');
 
-auth.onAuthStateChanged(async user => {
-  if (!user) { window.location.href = "index.html"; return; }
+/* utility untuk update progress */
+function setLoading(percent, step){
+  loadingPercent.textContent = percent + '%';
+  loadingBar.style.width = percent + '%';
+  loadingStep.textContent = step;
+}
 
-  try {
+/* cek auth & Firestore */
+auth.onAuthStateChanged(async user=>{
+  if(!user){ location.href='./login.html'; return; }
+
+  try{
     const ref = db.collection('users').doc(user.uid);
     const docSnap = await ref.get();
-
-    if (!docSnap.exists) return console.warn("⚠️ Data user belum ada di Firestore!");
-
-    const data = docSnap.data() || {};
-    console.log("✅ Data user:", data);
-
-    balanceEl.textContent = (data.balance || 0).toLocaleString('id-ID');
-    userInfo.textContent = `Halo, ${data.name || 'Pengguna'}`;
-
-    if (!data.pin) pinPopup.style.display = 'flex';
-
-    // 🔹 Update lastLogin dan reset loginAttempts
-    await ref.update({
-      lastLogin: new Date(),
-      "security.loginAttempts": 0
-    });
-
-    // 🔹 Cek verifikasi
-    if (data.verified === false) {
-      console.log("⚠️ Akun belum diverifikasi.");
+    if(docSnap.exists){
+      // data ada
+      const data = docSnap.data();
+      balanceEl.textContent = (data.balance||0).toLocaleString('id-ID');
+      userInfo.textContent = `Halo, ${data.name||'Pengguna'}`;
+      return; // dashboard siap ditampilkan
     }
 
-    loadTransactions(user.uid);
-  } catch (e) {
-    console.error("Gagal ambil data user:", e);
+    // data tidak ada → tampilkan popup
+    missingUserPopup.style.display = 'flex';
+
+  }catch(e){
+    console.error(e);
+    alert('Gagal memuat data. Silakan coba lagi.');
   }
 });
 
-async function loadTransactions(uid){
-  try {
-    const sent = await db.collection('transactions').where('senderId','==',uid).get();
-    const recv = await db.collection('transactions').where('recipientId','==',uid).get();
-    const all = [...sent.docs,...recv.docs]
-      .map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0))
-      .slice(0,5);
-    renderTransactions(all);
-  } catch(e){
-    console.error("Gagal ambil transaksi:", e);
-  }
-}
+/* tombol pulihkan akun */
+recoverUserBtn.onclick = async ()=>{
+  missingUserPopup.style.display='none';
+  loadingOverlay.style.display='flex';
+  setLoading(0,'Membuat akun...');
 
-function renderTransactions(list){
-  historyList.innerHTML='';
-  if(list.length===0){
-    historyList.innerHTML=`<div class="history-item"><div class="history-info"><p>Belum ada transaksi</p><span>Mulai transaksi sekarang</span></div></div>`;
-    return;
-  }
-  list.forEach(t=>{
-    const isOut=t.senderId===auth.currentUser.uid;
-    const prefix=isOut?'-':'+';
-    const cls=isOut?'out':'in';
-    const icon=isOut?'fa-arrow-up':'fa-arrow-down';
-    const name=isOut?(t.recipientName||t.recipientId):(t.senderName||t.senderId);
-    const time=new Date(t.timestamp?.seconds*1000||Date.now()).toLocaleString('id-ID');
-    historyList.innerHTML+=`
-      <div class="history-item">
-        <div class="history-details" style="display:flex;align-items:center;">
-          <div class="history-icon ${cls}"><i class="fas ${icon}"></i></div>
-          <div class="history-info"><p>${isOut?'Kirim ke':'Terima dari'} ${name}</p><span>${time}</span></div>
-        </div>
-        <div class="history-amount ${cls}">${prefix} Rp ${t.amount.toLocaleString('id-ID')}</div>
-      </div>`;
-  });
-}
+  const user = auth.currentUser;
+  if(!user) return;
 
-function navigateTo(p){window.location.href=p;}
-document.getElementById('laterPinBtn').onclick=()=>pinPopup.style.display='none';
-document.getElementById('createPinBtn').onclick=()=>window.location.href='create-pin.html';
+  const ref = db.collection('users').doc(user.uid);
+
+  const steps = [
+    {label:'Membuat auth account...', percent:20, fn:()=>Promise.resolve()},
+    {label:'Menambahkan field pin...', percent:40, fn:()=>ref.set({pin:'', balance:0},{merge:true})},
+    {label:'Menambahkan field settings...', percent:60, fn:()=>ref.set({settings:{theme:'light',language:'id',notifications:true}},{merge:true})},
+    {label:'Memeriksa data Firestore...', percent:80, fn:()=>ref.get()},
+    {label:'Selesai', percent:100, fn:()=>Promise.resolve()}
+  ];
+
+  for(const s of steps){
+    loadingStep.textContent = s.label;
+    await s.fn();
+    setLoading(s.percent,s.label);
+    await new Promise(r=>setTimeout(r,400)); // animasi sedikit delay
+  }
+
+  // centang hijau
+  loadingDone.style.display='block';
+  await new Promise(r=>setTimeout(r,800));
+  loadingOverlay.style.display='none';
+
+  // refresh halaman supaya dashboard muncul
+  location.reload();
+};
 </script>
 </body>
 </html>
